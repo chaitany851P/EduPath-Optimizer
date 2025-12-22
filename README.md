@@ -1,38 +1,56 @@
 # 🎓 EduPath Optimizer
-> **An AI-Driven Strategic Attendance Suggestion System**
+> **An AI-Driven Strategic Attendance Suggestion System for University Students.**
 
 ![Python](https://img.shields.io/badge/python-3.10+-blue.svg)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-05998b.svg?logo=fastapi&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.127.0-05998b.svg?logo=fastapi&logoColor=white)
 ![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248.svg?logo=mongodb&logoColor=white)
 ![Status](https://img.shields.io/badge/Status-Day_3_Completed-success.svg)
+![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 
-## 🌟 Overview
-**EduPath Optimizer** is not just an attendance tracker; it's a strategic academic assistant. It helps students maintain their 75% criteria by prioritizing lectures that align with their **Career Tracks** (Data Science, Cyber Security, etc.) while automatically accounting for public holidays and university events.
+**EduPath Optimizer** is an intelligent academic assistant that transitions from a simple attendance calculator into a diagnostic mentor. It helps students maintain their 75% attendance criteria while prioritizing lectures that align with their **Career Tracks** (Data Science, IOT, etc.) and identifying knowledge gaps across semesters.
 
-### 🚀 Key Features (Phase 1)
-- [x] **Smart Calendar:** Automated public holiday fetching via Regional APIs.
-- [x] **Weekend Logic:** Intelligent filtering of non-instructional days.
-- [x] **Gap Analysis:** Real-time calculation of "Minimum Days to Attend" for target %.
-- [x] **Pydantic Guard:** Robust data validation for zero-crash performance.
-- [ ] **Career Prioritization:** (In Progress) Highlighting critical lectures for professional growth.
+---
+
+## 🌟 Key Features
+### 📅 Phase 1: Attendance Core (In Progress)
+- [x] **Automated Holiday Fetching:** Integrated with `holidays` API to skip public holidays.
+- [x] **Weekend Logic:** Intelligent filtering of non-instructional days (Sat/Sun).
+- [x] **75% Gap Analysis:** Calculates the exact number of future classes required to stay safe.
+- [x] **Pydantic Validation:** Industrial-grade data validation for robust performance.
+- [ ] **Career Prioritization:** Algorithms to suggest dates based on professional interests.
+
+### 🧠 Phase 2: End-Sem Strategy
+- [ ] **CIE + Attendance Analysis:** Combines mid-term marks with attendance to predict exam risk.
+- [ ] **Stress Ranking:** Identifies "Double Danger" subjects (Low marks + Low attendance).
+
+### 🔗 Phase 3: Academic Bridge
+- [ ] **Knowledge Gap Detection:** Links last semester's Uni Exam results to current prerequisites.
+- [ ] **Foundation Planning:** Recommends bridge-courses for subjects where the student lacked foundation.
 
 ---
 
 ## 📊 Development Roadmap (Gantt Chart)
+
 ```mermaid
 gantt
-    title EduPath Optimizer Sprint Timeline
+    title EduPath Optimizer Daily Sprint Schedule
     dateFormat  YYYY-MM-DD
-    section Phase 1: Core Logic
+    section Week 1: Core Logic
     Project Setup & API Setup           :done, d1, 2025-12-22, 1d
     Holiday & Weekend Filtering         :done, d2, 2025-12-22, 1d
     75% Gap Logic & Pydantic Refactor   :done, d3, 2025-12-22, 1d
     Career Track Dictionary Logic       :active, d4, 2025-12-23, 1d
     Weekly Timetable Mock Setup         :d5, 2025-12-24, 1d
+    Saturday Logic Integration          :d6, 2025-12-27, 1d
     
-    section Phase 2: Intelligence
-    MongoDB Integration                 :d6, 2025-12-26, 3d
-    End-Sem Diagnostic Strategy         :d7, 2026-01-05, 5d
+    section Week 2: Database Layer
+    MongoDB Atlas Setup                 :d7, 2025-12-29, 1d
+    Connect FastAPI to Motor            :d8, 2025-12-30, 1d
+    Student Profile CRUD                :d9, 2026-01-01, 1d
+    Career Mapping in DB                :d10, 2026-01-02, 1d
+    Saturday DB Integration             :d11, 2026-01-03, 1d
 
-    section Phase 3: Bridge
-    Cumulative Academic Bridge          :d8, 2026-01-15, 5d
+    section Week 3 & 4: UI & Final
+    Frontend Dashboard (Tailwind)       :d12, 2026-01-05, 5d
+    Logic & UI Integration              :d13, 2026-01-10, 5d
+    Final SGP Demo & Documentation      :d14, 2026-01-15, 3d
