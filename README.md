@@ -71,7 +71,7 @@ gantt
     Weekly Timetable Mock Setup       :d7, 2025-12-25, 1d
 ```
 
-```markdown
+
 ## 🛠️ Tech Stack
 - **Backend:** [FastAPI](https://fastapi.tiangolo.com/) (Python)
 - **Database:** [MongoDB Atlas](https://www.mongodb.com/atlas)
