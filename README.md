@@ -96,7 +96,7 @@ gantt
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/YOUR_USERNAME/EduPath-Optimizer.git
+   git clone https://github.com/chaitany851P/EduPath-Optimizer.git
    cd EduPath-Optimizer
    ```
 ## ⚙️ Setup
