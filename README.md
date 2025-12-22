@@ -54,7 +54,7 @@ gantt
     Frontend Dashboard (Tailwind)       :d12, 2026-01-05, 5d
     Logic & UI Integration              :d13, 2026-01-10, 5d
     Final SGP Demo & Documentation      :d14, 2026-01-15, 3d
-# EduPath Optimizer 🎓
+```
 
 ## 📊 Day-to-Day Development Progress
 ```mermaid
@@ -69,3 +69,43 @@ gantt
     Pydantic Validation & Refactoring :active, d5, 2025-12-23, 1d
     Career Track Dictionary Logic     :d6, 2025-12-24, 1d
     Weekly Timetable Mock Setup       :d7, 2025-12-25, 1d
+```
+
+
+## 🛠️ Tech Stack
+- **Backend:** [FastAPI](https://fastapi.tiangolo.com/) (Python)
+- **Database:** [MongoDB Atlas](https://www.mongodb.com/atlas)
+- **Validation:** [Pydantic v2](https://docs.pydantic.dev/)
+- **API:** [Python-Holidays](https://pypi.org/project/holidays/)
+- **Frontend:** HTML5, Tailwind CSS, JavaScript
+
+---
+
+## 🧠 Future Roadmap
+### Phase 2: End-Sem Strategy
+- [ ] **CIE + Attendance Analysis:** Combines mid-term marks with attendance to predict exam risk.
+- [ ] **Stress Ranking:** Identifies "Double Danger" subjects (Low marks + Low attendance).
+
+### Phase 3: Academic Bridge
+- [ ] **Knowledge Gap Detection:** Links last semester's Uni Exam results to current prerequisites.
+- [ ] **Foundation Planning:** Recommends bridge-courses for subjects where the student lacked foundation.
+
+---
+
+## ⚙️ Setup & Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/EduPath-Optimizer.git
+   cd EduPath-Optimizer
+   ```
+## ⚙️ Setup
+1. **Venv:** `python -m venv venv`
+2. **Activate:** `.\venv\Scripts\activate` (Win) or `source venv/bin/activate` (Mac)
+3. **Install:** `pip install fastapi uvicorn holidays`
+4. **Run:** `uvicorn main:app --reload`
+
+---
+## 👨‍💻 Author
+**Chaitany Thakar**
+*SGP Project - University Attendance Optimizer*
