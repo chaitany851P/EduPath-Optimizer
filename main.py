@@ -74,7 +74,7 @@ def health_check():
 
 @app.post("/calculate-strategy")
 def calculate_strategy(data: AttendanceInput):
-    # Fetch categorized working days
+    # 1. Fetch categorized working days
     p_days, g_days, h_list = get_strategic_dates(
         data.start_date, data.end_date, data.country_code, data.career_track
     )
@@ -82,40 +82,40 @@ def calculate_strategy(data: AttendanceInput):
     total_working = p_days + g_days
     total_count = len(total_working)
     
-    # Calculate target math
-    # math.ceil ensures we always round up to the nearest whole class
+    # 2. Math logic
     required_total = math.ceil((data.target_percentage / 100) * total_count)
     gap = max(0, required_total - data.current_attended)
     
-    # Identify FUTURE dates (Today onwards)
+    # 3. Identify FUTURE dates (Today onwards)
     today = date.today()
     future_p = [d for d in p_days if d >= today]
     future_g = [d for d in g_days if d >= today]
     
-    # Combine lists: Priority days first, then fill remaining gap with General days
-    suggested_dates = (future_p + future_g)[:gap]
+    # --- 4. CATEGORIZATION LOGIC (The Alignment Fix) ---
+    suggested_career_dates = []
+    suggested_buffer_dates = []
 
-    # --- SMART AI REASONING LOGIC ---
-    future_p_count = len(future_p)
-    
+    if gap > 0:
+        # Fill with Priority Career Dates first
+        if gap <= len(future_p):
+            suggested_career_dates = future_p[:gap]
+        else:
+            suggested_career_dates = future_p
+            # Fill the remaining gap with General (Buffer) dates
+            remaining_gap = gap - len(future_p)
+            suggested_buffer_dates = future_g[:remaining_gap]
+
+    # --- 5. SMART AI REASONING ---
     if gap == 0:
         logic_explanation = (
-            f"You have already met your {data.target_percentage}% target. "
-            f"No mandatory attendance needed, but there are {future_p_count} "
-            f"career-critical classes remaining for your professional growth."
-        )
-    elif gap <= future_p_count:
-        logic_explanation = (
-            f"To hit your goal, you need {gap} more days. "
-            f"We have suggested {gap} dates that are 100% aligned with your "
-            f"{data.career_track} career track."
+            f"Goal met! You have already achieved {data.target_percentage}%. "
+            f"No mandatory attendance needed, but attending the {len(future_p)} "
+            f"career-critical dates below is recommended for your {data.career_track} goals."
         )
     else:
-        extra_days = gap - future_p_count
         logic_explanation = (
-            f"To hit your goal, you need {gap} more days. We prioritized all "
-            f"{future_p_count} career-critical classes, plus {extra_days} general "
-            "classes to ensure you meet the university criteria."
+            f"To hit your goal, you need {gap} more days. We prioritized {len(suggested_career_dates)} "
+            f"core {data.career_track} sessions and {len(suggested_buffer_dates)} general sessions."
         )
 
     return {
@@ -126,14 +126,13 @@ def calculate_strategy(data: AttendanceInput):
         },
         "attendance_math": {
             "current_attended": data.current_attended,
-            "target_percentage": f"{data.target_percentage}%",
-            "classes_required_total": required_total,
+            "target_required": required_total,
             "gap_to_fill": gap
         },
         "strategic_plan": {
-            "count_of_dates_suggested": len(suggested_dates),
-            "dates_to_attend": suggested_dates,
-            "logic_explanation": logic_explanation
+            "logic_explanation": logic_explanation,
+            "career_priority_dates": suggested_career_dates, # POINTED OUT SEPARATELY
+            "buffer_attendance_dates": suggested_buffer_dates # POINTED OUT SEPARATELY
         }
     }
 
