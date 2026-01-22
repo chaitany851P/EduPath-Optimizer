@@ -3,60 +3,58 @@ from pydantic import BaseModel, Field
 from datetime import date, timedelta, datetime
 import holidays
 import math
+from pymongo.mongo_client import MongoClient
+from pymongo.server_api import ServerApi
 
-# Initialize FastAPI App
+# --- 1. INITIALIZATION ---
 app = FastAPI(
-    title="EduPath Optimizer - Strategic Version",
-    description="An AI-driven strategic attendance suggestion system for university students.",
-    version="1.1.0"
+    title="EduPath Optimizer",
+    description="Strategic Attendance System with MongoDB and Admin Fest Management",
+    version="1.2.0"
 )
 
-# --- 1. CONFIGURATION: CAREER TRACKS & TIMETABLE ---
-CAREER_TRACKS = {
-    "Data Science": ["Python", "Statistics", "Machine Learning", "Data Mining"],
-    "Cyber Security": ["Networking", "Cryptography", "Ethical Hacking", "Linux"],
-    "IOT": ["Embedded Systems", "Sensors", "Microcontrollers", "C Programming"],
-    "Computer Graphics": ["UI/UX", "Animation", "Rendering", "Game Dev"]
-}
+# --- 2. MONGODB CONNECTION ---
+# Using your provided URI
+uri = "mongodb+srv://chaitany-thakar:85173221cP@cluster0.flpifkn.mongodb.net/?appName=Cluster0"
+client = MongoClient(uri, server_api=ServerApi('1'))
+db = client.edupath_db
 
-# Mock Timetable: 0=Mon, 1=Tue, 2=Wed, 3=Thu, 4=Fri
-WEEKLY_TIMETABLE = {
-    0: ["Maths", "Python", "C Programming"],          # Monday
-    1: ["Statistics", "Embedded Systems"],            # Tuesday
-    2: ["Machine Learning", "Linux", "Animation"],    # Wednesday
-    3: ["Data Mining", "Networking", "Sensors"],      # Thursday
-    4: ["Cryptography", "UI/UX", "Ethics"]            # Friday
-}
+# Collections
+career_collection = db.get_collection("career_tracks")
+timetable_collection = db.get_collection("timetables")
+fest_collection = db.get_collection("fests")
 
-# --- 2. MODELS: INPUT DATA VALIDATION ---
+# --- 3. MODELS (Pydantic) ---
 class AttendanceInput(BaseModel):
-    start_date: date = Field(..., description="Format: YYYY-MM-DD")
-    end_date: date = Field(..., description="Format: YYYY-MM-DD")
-    current_attended: int = Field(..., ge=0, description="Number of classes already attended")
-    target_percentage: float = Field(default=75.0, ge=0, le=100, description="Minimum percentage required (0-100)")
-    career_track: str = Field(default="Data Science", description="Chosen career path for prioritization")
-    country_code: str = Field(default="IN", description="ISO Country Code for public holidays")
+    start_date: date
+    end_date: date
+    current_attended: int = Field(..., ge=0)
+    target_percentage: float = Field(default=75.0, ge=0, le=100)
+    career_track: str = Field(default="Data Science")
+    country_code: str = "IN"
 
-# --- 3. HELPER LOGIC: DATE CALCULATIONS & HOLIDAYS ---
-def get_strategic_dates(start: date, end: date, country_code: str, track: str):
-    if end < start:
-        raise HTTPException(status_code=400, detail="End date cannot be before start date.")
+class FestInput(BaseModel):
+    event_name: str
+    event_date: date
 
-    # Load public holidays for the specific years in range
+# --- 4. HELPER LOGIC ---
+def get_strategic_dates(start: date, end: date, country_code: str, target_subjects: list, db_timetable: dict):
+    # Fetch public holidays for the range
     years = list(set([start.year, end.year]))
-    all_holidays = holidays.CountryHoliday(country_code, years=years)
+    public_holidays = holidays.CountryHoliday(country_code, years=years)
     
-    target_subjects = CAREER_TRACKS.get(track, [])
+    # Fetch University Fests from MongoDB
+    fest_cursor = fest_collection.find({})
+    fest_dates = {datetime.strptime(f["date"], "%Y-%m-%d").date() for f in fest_cursor if "date" in f}
     
     priority_days = []
     general_days = []
     
     current = start
     while current <= end:
-        # Check if it's a weekday (0-4) and NOT a public holiday
-        if current.weekday() < 5 and current not in all_holidays:
-            day_subjects = WEEKLY_TIMETABLE.get(current.weekday(), [])
-            # Check if any subject on this day matches the Career Track
+        # Working Day Check: Not Weekend + Not Holiday + Not Fest
+        if current.weekday() < 5 and current not in public_holidays and current not in fest_dates:
+            day_subjects = db_timetable.get(current.weekday(), [])
             is_priority = any(sub in target_subjects for sub in day_subjects)
             
             if is_priority:
@@ -65,64 +63,91 @@ def get_strategic_dates(start: date, end: date, country_code: str, track: str):
                 general_days.append(current)
         current += timedelta(days=1)
         
-    return priority_days, general_days, all_holidays
+    return priority_days, general_days, fest_dates
 
-# --- 4. MAIN ENDPOINT: STRATEGY CALCULATION ---
-@app.get("/")
+# --- 5. ADMIN ENDPOINTS ---
+@app.post("/admin/add-fest", tags=["Admin"])
+def add_fest(fest: FestInput):
+    """Teachers use this to add University Events/Fests as holidays."""
+    fest_data = {
+        "name": fest.event_name,
+        "date": str(fest.event_date)
+    }
+    fest_collection.insert_one(fest_data)
+    return {"message": f"Event '{fest.event_name}' added successfully."}
+
+# --- 6. STUDENT STRATEGY ENDPOINTS ---
+@app.get("/", tags=["General"])
 def health_check():
-    return {"status": "online", "project": "EduPath Optimizer", "day": 4}
+    return {"status": "EduPath Optimizer Online", "phase": 1}
 
-@app.post("/calculate-strategy")
+@app.post("/calculate-strategy", tags=["Student"])
 def calculate_strategy(data: AttendanceInput):
-    # 1. Fetch categorized working days
-    p_days, g_days, h_list = get_strategic_dates(
-        data.start_date, data.end_date, data.country_code, data.career_track
+    # 1. Fetch Career Track Data from DB
+    track_doc = career_collection.find_one({"name": data.career_track})
+    if not track_doc:
+        raise HTTPException(status_code=404, detail=f"Career track '{data.career_track}' not found.")
+    target_subjects = track_doc.get("subjects", [])
+
+    # 2. Fetch Timetable Data safely (Prevents KeyError)
+    timetable_cursor = timetable_collection.find({})
+    db_timetable = {}
+    for doc in timetable_cursor:
+        idx = doc.get("day_index")
+        subs = doc.get("subjects")
+        if idx is not None and subs is not None:
+            db_timetable[idx] = subs
+
+    if not db_timetable:
+        raise HTTPException(status_code=500, detail="University timetable is empty in database.")
+
+    # 3. Calculate working days and priority dates
+    p_days, g_days, f_dates = get_strategic_dates(
+        data.start_date, data.end_date, data.country_code, target_subjects, db_timetable
     )
     
-    total_working = p_days + g_days
-    total_count = len(total_working)
+    total_working_count = len(p_days) + len(g_days)
     
-    # 2. Math logic
-    required_total = math.ceil((data.target_percentage / 100) * total_count)
+    # 4. Math Logic
+    required_total = math.ceil((data.target_percentage / 100) * total_working_count)
     gap = max(0, required_total - data.current_attended)
     
-    # 3. Identify FUTURE dates (Today onwards)
+    # 5. Strategic Categorization (Prioritize future career dates)
     today = date.today()
     future_p = [d for d in p_days if d >= today]
     future_g = [d for d in g_days if d >= today]
     
-    # --- 4. CATEGORIZATION LOGIC (The Alignment Fix) ---
-    suggested_career_dates = []
-    suggested_buffer_dates = []
+    suggested_career = []
+    suggested_buffer = []
 
     if gap > 0:
-        # Fill with Priority Career Dates first
         if gap <= len(future_p):
-            suggested_career_dates = future_p[:gap]
+            suggested_career = future_p[:gap]
         else:
-            suggested_career_dates = future_p
-            # Fill the remaining gap with General (Buffer) dates
+            suggested_career = future_p
             remaining_gap = gap - len(future_p)
-            suggested_buffer_dates = future_g[:remaining_gap]
+            suggested_buffer = future_g[:remaining_gap]
 
-    # --- 5. SMART AI REASONING ---
+    # 6. Smart Reasoning Message
+    total_suggested = len(suggested_career) + len(suggested_buffer)
+
     if gap == 0:
-        logic_explanation = (
-            f"Goal met! You have already achieved {data.target_percentage}%. "
-            f"No mandatory attendance needed, but attending the {len(future_p)} "
-            f"career-critical dates below is recommended for your {data.career_track} goals."
+        explanation = f"Goal met! You are above {data.target_percentage}%. No mandatory classes needed."
+    elif total_suggested < gap:
+        # IMPOSSIBLE CASE
+        explanation = (
+            f"⚠️ ATTENDANCE RISK: It is mathematically impossible to hit {data.target_percentage}%. "
+            f"Even if you attend all {total_suggested} remaining days, you will still be "
+            f"{gap - total_suggested} classes short. Contact your Counsellor."
         )
     else:
-        logic_explanation = (
-            f"To hit your goal, you need {gap} more days. We prioritized {len(suggested_career_dates)} "
-            f"core {data.career_track} sessions and {len(suggested_buffer_dates)} general sessions."
-        )
+        explanation = f"Plan: Attend {len(suggested_career)} career sessions and {len(suggested_buffer)} general sessions."
 
     return {
         "meta_data": {
-            "career_track_selected": data.career_track,
-            "total_semester_working_days": total_count,
-            "today": str(today)
+            "career_track": data.career_track,
+            "total_working_days": total_working_count,
+            "fests_found_in_range": len([f for f in f_dates if data.start_date <= f <= data.end_date])
         },
         "attendance_math": {
             "current_attended": data.current_attended,
@@ -130,9 +155,9 @@ def calculate_strategy(data: AttendanceInput):
             "gap_to_fill": gap
         },
         "strategic_plan": {
-            "logic_explanation": logic_explanation,
-            "career_priority_dates": suggested_career_dates, # POINTED OUT SEPARATELY
-            "buffer_attendance_dates": suggested_buffer_dates # POINTED OUT SEPARATELY
+            "logic_explanation": explanation,
+            "career_priority_dates": suggested_career,
+            "buffer_attendance_dates": suggested_buffer
         }
     }
 

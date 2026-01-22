@@ -1,0 +1,15 @@
+{
+  "career_tracks": [
+    {"name": "Data Science", "subjects": ["Python", "Statistics", "Machine Learning", "Data Mining"]},
+    {"name": "Cyber Security", "subjects": ["Networking", "Cryptography", "Ethical Hacking", "Linux"]},
+    {"name": "IOT", "subjects": ["Embedded Systems", "Sensors", "Microcontrollers", "C Programming"]},
+    {"name": "Computer Graphics", "subjects": ["UI/UX", "Animation", "Rendering", "Game Dev"]}
+  ],
+  "timetables": [
+    {"day_index": 0, "subjects": ["Maths", "Python", "C Programming"]},
+    {"day_index": 1, "subjects": ["Statistics", "Embedded Systems"]},
+    {"day_index": 2, "subjects": ["Machine Learning", "Linux", "Animation"]},
+    {"day_index": 3, "subjects": ["Data Mining", "Networking", "Sensors"]},
+    {"day_index": 4, "subjects": ["Cryptography", "UI/UX", "Ethics"]}
+  ]
+}
