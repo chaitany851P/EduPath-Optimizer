@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduPath Optimizer | Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <header class="text-center mb-10">
+            <h1 class="text-4xl font-bold text-blue-800">🎓 EduPath Optimizer</h1>
+            <p class="text-gray-600 mt-2">Strategic Attendance Suggestion System</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Input Form -->
+            <div class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
+                <h2 class="text-xl font-semibold mb-4 text-gray-700">Enter Your Details</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Semester Start</label>
+                        <input type="date" id="start_date" class="w-full mt-1 p-2 border rounded-md" value="2026-01-01">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Semester End</label>
+                        <input type="date" id="end_date" class="w-full mt-1 p-2 border rounded-md" value="2026-05-30">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Classes Attended So Far</label>
+                        <input type="number" id="current_attended" class="w-full mt-1 p-2 border rounded-md" value="0">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Career Track</label>
+                        <select id="career_track" class="w-full mt-1 p-2 border rounded-md">
+                            <option value="Data Science">Data Science</option>
+                            <option value="IOT">IOT</option>
+                            <option value="Cyber Security">Cyber Security</option>
+                            <option value="Computer Graphics">Computer Graphics</option>
+                        </select>
+                    </div>
+                    <button onclick="calculate()" class="w-full bg-blue-600 text-white font-bold py-3 rounded-md hover:bg-blue-700 transition">Optimize My Schedule</button>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="lg:col-span-2 space-y-6">
+                <div id="result-card" class="hidden bg-white p-6 rounded-xl shadow-md border border-blue-200">
+                    <h2 class="text-2xl font-bold text-blue-800 mb-2">Your Smart Strategy</h2>
+                    <p id="logic-explanation" class="text-lg text-gray-700 bg-blue-50 p-4 rounded-lg mb-4 border-l-4 border-blue-500"></p>
+                    
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div class="p-4 bg-gray-100 rounded-lg">
+                            <p class="text-sm text-gray-500">Working Days in Sem</p>
+                            <p id="total-days" class="text-2xl font-bold"></p>
+                        </div>
+                        <div class="p-4 bg-gray-100 rounded-lg">
+                            <p class="text-sm text-gray-500">Classes to Attend</p>
+                            <p id="gap-to-fill" class="text-2xl font-bold text-red-600"></p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <h3 class="font-bold text-gray-700">📅 Priority Career Dates (High Impact)</h3>
+                        <div id="career-dates" class="flex flex-wrap gap-2"></div>
+
+                        <h3 class="font-bold text-gray-700">📅 General Buffer Dates (To Hit %)</h3>
+                        <div id="buffer-dates" class="flex flex-wrap gap-2"></div>
+                    </div>
+                </div>
+
+                <!-- Loading State -->
+                <div id="loading" class="hidden text-center py-20">
+                    <p class="text-xl text-gray-500 animate-pulse">Calculating your best path...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function calculate() {
+            const btn = document.querySelector('button');
+            const resultCard = document.getElementById('result-card');
+            const loading = document.getElementById('loading');
+
+            // Show loading
+            resultCard.classList.add('hidden');
+            loading.classList.remove('hidden');
+
+            const payload = {
+                start_date: document.getElementById('start_date').value,
+                end_date: document.getElementById('end_date').value,
+                current_attended: parseInt(document.getElementById('current_attended').value),
+                career_track: document.getElementById('career_track').value,
+                target_percentage: 75.0,
+                country_code: "IN"
+            };
+
+            try {
+                const response = await fetch('/calculate-strategy', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    loading.classList.add('hidden');
+                    resultCard.classList.remove('hidden');
+
+                    document.getElementById('logic-explanation').innerText = data.strategic_plan.logic_explanation;
+                    document.getElementById('total-days').innerText = data.meta_data.total_working_days;
+                    document.getElementById('gap-to-fill').innerText = data.attendance_math.gap_to_fill;
+
+                    // Render Career Dates (Green)
+                    const careerContainer = document.getElementById('career-dates');
+                    careerContainer.innerHTML = '';
+                    data.strategic_plan.career_priority_dates.forEach(date => {
+                        careerContainer.innerHTML += `<span class="px-3 py-1 bg-green-100 text-green-700 border border-green-300 rounded-full text-sm font-medium">${date}</span>`;
+                    });
+
+                    // Render Buffer Dates (Blue)
+                    const bufferContainer = document.getElementById('buffer-dates');
+                    bufferContainer.innerHTML = '';
+                    data.strategic_plan.buffer_attendance_dates.forEach(date => {
+                        bufferContainer.innerHTML += `<span class="px-3 py-1 bg-blue-100 text-blue-700 border border-blue-300 rounded-full text-sm font-medium">${date}</span>`;
+                    });
+                } else {
+                    alert("Error: " + data.detail);
+                }
+            } catch (err) {
+                alert("Connection failed. Make sure your Backend is running.");
+            } finally {
+                loading.classList.add('hidden');
+            }
+        }
+    </script>
+</body>
+</html>

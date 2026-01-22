@@ -1,4 +1,6 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field
 from datetime import date, timedelta, datetime
 import holidays
@@ -7,14 +9,12 @@ from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 
 # --- 1. INITIALIZATION ---
-app = FastAPI(
-    title="EduPath Optimizer",
-    description="Strategic Attendance System with MongoDB and Admin Fest Management",
-    version="1.2.0"
-)
+app = FastAPI(title="EduPath Optimizer")
+
+# Setup Templates folder for Frontend
+templates = Jinja2Templates(directory="templates")
 
 # --- 2. MONGODB CONNECTION ---
-# Using your provided URI
 uri = "mongodb+srv://chaitany-thakar:85173221cP@cluster0.flpifkn.mongodb.net/?appName=Cluster0"
 client = MongoClient(uri, server_api=ServerApi('1'))
 db = client.edupath_db
@@ -39,7 +39,6 @@ class FestInput(BaseModel):
 
 # --- 4. HELPER LOGIC ---
 def get_strategic_dates(start: date, end: date, country_code: str, target_subjects: list, db_timetable: dict):
-    # Fetch public holidays for the range
     years = list(set([start.year, end.year]))
     public_holidays = holidays.CountryHoliday(country_code, years=years)
     
@@ -65,10 +64,16 @@ def get_strategic_dates(start: date, end: date, country_code: str, target_subjec
         
     return priority_days, general_days, fest_dates
 
-# --- 5. ADMIN ENDPOINTS ---
-@app.post("/admin/add-fest", tags=["Admin"])
+# --- 5. FRONTEND ROUTE ---
+@app.get("/", response_class=HTMLResponse)
+async def home(request: Request):
+    """Serves the Dashboard UI"""
+    return templates.TemplateResponse("index.html", {"request": request})
+
+# --- 6. ADMIN ENDPOINTS ---
+@app.post("/admin/add-fest")
 def add_fest(fest: FestInput):
-    """Teachers use this to add University Events/Fests as holidays."""
+    """Teachers use this to add University Events/Fests"""
     fest_data = {
         "name": fest.event_name,
         "date": str(fest.event_date)
@@ -76,91 +81,81 @@ def add_fest(fest: FestInput):
     fest_collection.insert_one(fest_data)
     return {"message": f"Event '{fest.event_name}' added successfully."}
 
-# --- 6. STUDENT STRATEGY ENDPOINTS ---
-@app.get("/", tags=["General"])
-def health_check():
-    return {"status": "EduPath Optimizer Online", "phase": 1}
-
-@app.post("/calculate-strategy", tags=["Student"])
+# --- 7. STUDENT STRATEGY ENDPOINT ---
+@app.post("/calculate-strategy")
 def calculate_strategy(data: AttendanceInput):
-    # 1. Fetch Career Track Data from DB
+    # 1. Database Fetching
     track_doc = career_collection.find_one({"name": data.career_track})
     if not track_doc:
-        raise HTTPException(status_code=404, detail=f"Career track '{data.career_track}' not found.")
+        raise HTTPException(status_code=404, detail="Track not found")
     target_subjects = track_doc.get("subjects", [])
 
-    # 2. Fetch Timetable Data safely (Prevents KeyError)
     timetable_cursor = timetable_collection.find({})
-    db_timetable = {}
-    for doc in timetable_cursor:
-        idx = doc.get("day_index")
-        subs = doc.get("subjects")
-        if idx is not None and subs is not None:
-            db_timetable[idx] = subs
+    db_timetable = {doc.get("day_index"): doc.get("subjects") for doc in timetable_cursor if doc.get("day_index") is not None}
 
-    if not db_timetable:
-        raise HTTPException(status_code=500, detail="University timetable is empty in database.")
-
-    # 3. Calculate working days and priority dates
+    # 2. Get ALL working days for the Full Semester
     p_days, g_days, f_dates = get_strategic_dates(
         data.start_date, data.end_date, data.country_code, target_subjects, db_timetable
     )
-    
     total_working_count = len(p_days) + len(g_days)
-    
-    # 4. Math Logic
+
+    # 3. Attendance Math
     required_total = math.ceil((data.target_percentage / 100) * total_working_count)
     gap = max(0, required_total - data.current_attended)
-    
-    # 5. Strategic Categorization (Prioritize future career dates)
+
+    # 4. Filter for FUTURE dates only
     today = date.today()
     future_p = [d for d in p_days if d >= today]
     future_g = [d for d in g_days if d >= today]
-    
-    suggested_career = []
-    suggested_buffer = []
+    total_future_available = len(future_p) + len(future_g)
+
+    # 5. Build the Plan & Format Dates to DD-MM-YYYY
+    suggested_career_objs = []
+    suggested_buffer_objs = []
 
     if gap > 0:
         if gap <= len(future_p):
-            suggested_career = future_p[:gap]
+            suggested_career_objs = future_p[:gap]
         else:
-            suggested_career = future_p
+            suggested_career_objs = future_p
             remaining_gap = gap - len(future_p)
-            suggested_buffer = future_g[:remaining_gap]
+            suggested_buffer_objs = future_g[:remaining_gap]
 
-    # 6. Smart Reasoning Message
-    total_suggested = len(suggested_career) + len(suggested_buffer)
+    # Convert date objects to DD-MM-YYYY strings
+    formatted_career = [d.strftime("%d-%m-%Y") for d in suggested_career_objs]
+    formatted_buffer = [d.strftime("%d-%m-%Y") for d in suggested_buffer_objs]
 
+    # 6. Smart Reasoning + Counselor Warning
     if gap == 0:
-        explanation = f"Goal met! You are above {data.target_percentage}%. No mandatory classes needed."
-    elif total_suggested < gap:
-        # IMPOSSIBLE CASE
+        explanation = f"Goal met! You are above {data.target_percentage}%. No more mandatory classes needed."
+    elif gap > total_future_available:
+        # THE IMPOSSIBLE CASE + COUNSELOR WARNING
         explanation = (
-            f"⚠️ ATTENDANCE RISK: It is mathematically impossible to hit {data.target_percentage}%. "
-            f"Even if you attend all {total_suggested} remaining days, you will still be "
-            f"{gap - total_suggested} classes short. Contact your Counsellor."
+            f"⚠️ CRITICAL RISK: It is impossible to hit {data.target_percentage}%. "
+            f"You need {gap} more classes, but only {total_future_available} days remain. "
+            f"Attend all {total_future_available} days to get as close as possible. "
+            f"Please meet your counselor immediately for further guidance."
         )
     else:
-        explanation = f"Plan: Attend {len(suggested_career)} career sessions and {len(suggested_buffer)} general sessions."
+        explanation = f"Strategic Plan: Attend {len(formatted_career)} career sessions and {len(formatted_buffer)} buffer sessions to hit your target."
 
     return {
         "meta_data": {
             "career_track": data.career_track,
-            "total_working_days": total_working_count,
-            "fests_found_in_range": len([f for f in f_dates if data.start_date <= f <= data.end_date])
+            "total_working_days": total_working_count, # Matching frontend key
+            "days_remaining": total_future_available
         },
         "attendance_math": {
             "current_attended": data.current_attended,
-            "target_required": required_total,
             "gap_to_fill": gap
         },
         "strategic_plan": {
             "logic_explanation": explanation,
-            "career_priority_dates": suggested_career,
-            "buffer_attendance_dates": suggested_buffer
+            "career_priority_dates": formatted_career,
+            "buffer_attendance_dates": formatted_buffer
         }
     }
-
+# --- 8. RUN APP ---
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="127.0.0.1", port=8000)
