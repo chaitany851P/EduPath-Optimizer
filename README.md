@@ -4,7 +4,7 @@
 ![Python](https://img.shields.io/badge/python-3.10+-blue.svg)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.127.0-05998b.svg?logo=fastapi&logoColor=white)
 ![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248.svg?logo=mongodb&logoColor=white)
-![Status](https://img.shields.io/badge/Status-Day_3_Completed-success.svg)
+![Status](https://img.shields.io/badge/Status-Phase_1_Core_Complete-success.svg)
 ![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 
 **EduPath Optimizer** is an intelligent academic assistant that transitions from a simple attendance calculator into a diagnostic mentor. It helps students maintain their 75% attendance criteria while prioritizing lectures that align with their **Career Tracks** (Data Science, IOT, etc.) and identifying knowledge gaps across semesters.
@@ -12,20 +12,22 @@
 ---
 
 ## 🌟 Key Features
-### 📅 Phase 1: Attendance Core (In Progress)
-- [x] **Automated Holiday Fetching:** Integrated with `holidays` API to skip public holidays.
+### 📅 Phase 1: Attendance Core (Active Milestone)
+- [x] **Automated Holiday Fetching:** Integrated with `holidays` API to auto-skip public holidays.
 - [x] **Weekend Logic:** Intelligent filtering of non-instructional days (Sat/Sun).
-- [x] **75% Gap Analysis:** Calculates the exact number of future classes required to stay safe.
-- [x] **Pydantic Validation:** Industrial-grade data validation for robust performance.
-- [ ] **Career Prioritization:** Algorithms to suggest dates based on professional interests.
+- [x] **75% Gap Analysis:** Real-time calculation of future classes required to stay safe.
+- [x] **Database Integration:** Centralized storage of Timetables and Career Tracks via **MongoDB Atlas**.
+- [x] **Admin Fest Management:** Teacher-facing endpoint to add university events as holidays.
+- [x] **Career Prioritization:** Algorithms to suggest dates based on professional interests.
+- [x] **Feasibility Warning:** AI alerts when a target percentage becomes mathematically impossible.
 
-### 🧠 Phase 2: End-Sem Strategy
-- [ ] **CIE + Attendance Analysis:** Combines mid-term marks with attendance to predict exam risk.
+### 🧠 Phase 2: End-Sem Strategy (Next)
+- [ ] **Attendance + CIE + Mid-Term Analysis:** Predicts exam risk using performance data.
 - [ ] **Stress Ranking:** Identifies "Double Danger" subjects (Low marks + Low attendance).
 
 ### 🔗 Phase 3: Academic Bridge
 - [ ] **Knowledge Gap Detection:** Links last semester's Uni Exam results to current prerequisites.
-- [ ] **Foundation Planning:** Recommends bridge-courses for subjects where the student lacked foundation.
+- [ ] **Foundation Planning:** Connects past semester data to help in the new semester success.
 
 ---
 
@@ -33,43 +35,26 @@
 
 ```mermaid
 gantt
-    title EduPath Optimizer Daily Sprint Schedule
+    title EduPath Optimizer - Unified Sprint Schedule
     dateFormat  YYYY-MM-DD
     section Week 1: Core Logic
     Project Setup & API Setup           :done, d1, 2025-12-22, 1d
     Holiday & Weekend Filtering         :done, d2, 2025-12-22, 1d
     75% Gap Logic & Pydantic Refactor   :done, d3, 2025-12-22, 1d
-    Career Track Dictionary Logic       :active, d4, 2025-12-23, 1d
-    Weekly Timetable Mock Setup         :d5, 2025-12-24, 1d
-    Saturday Logic Integration          :d6, 2025-12-27, 1d
+    Career Track Prioritization Logic   :done, d4, 2025-12-23, 1d
+    Weekly Timetable & Logic Refine     :done, d5, 2025-12-23, 1d
     
-    section Week 2: Database Layer
-    MongoDB Atlas Setup                 :d7, 2025-12-29, 1d
-    Connect FastAPI to Motor            :d8, 2025-12-30, 1d
-    Student Profile CRUD                :d9, 2026-01-01, 1d
-    Career Mapping in DB                :d10, 2026-01-02, 1d
-    Saturday DB Integration             :d11, 2026-01-03, 1d
-
-    section Week 3 & 4: UI & Final
-    Frontend Dashboard (Tailwind)       :d12, 2026-01-05, 5d
-    Logic & UI Integration              :d13, 2026-01-10, 5d
-    Final SGP Demo & Documentation      :d14, 2026-01-15, 3d
+    section Week 2: Database & Admin
+    MongoDB Atlas Cloud Setup           :done, d6, 2026-01-22, 1d
+    Admin Fest Management Endpoint      :done, d7, 2026-01-22, 1d
+    Feasibility Analysis Logic          :done, d8, 2026-01-22, 1d
+    
+    section Week 3: UI & Visuals
+    Frontend Dashboard (Tailwind)       :active, d9, 2026-01-23, 5d
+    Logic & UI Integration              :d10, after d9, 5d
+    Final SGP Demo & Documentation      :d11, after d10, 3d
 ```
 
-## 📊 Day-to-Day Development Progress
-```mermaid
-gantt
-    title EduPath Optimizer - Daily Sprint Schedule
-    dateFormat  YYYY-MM-DD
-    section Week 1: Core Logic
-    Project Setup & FastAPI Setup     :done, d1, 2025-12-22, 1d
-    Public Holiday API Integration    :done, d2, 2025-12-22, 1d
-    Weekend Filtering Logic           :done, d3, 2025-12-22, 1d
-    75% Attendance Gap Calculation    :done, d4, 2025-12-22, 1d
-    Pydantic Validation & Refactoring :active, d5, 2025-12-23, 1d
-    Career Track Dictionary Logic     :d6, 2025-12-24, 1d
-    Weekly Timetable Mock Setup       :d7, 2025-12-25, 1d
-```
 
 
 ## 🛠️ Tech Stack
