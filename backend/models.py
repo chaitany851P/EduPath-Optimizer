@@ -35,6 +35,9 @@ class StudentCreate(BaseModel):
     semester: int
     career_track: CareerTrack = CareerTrack.GENERAL
     target_attendance: float = Field(default=75.0, ge=75.0, le=100.0)
+    # Multi-Campus Support
+    campus_id: str = Field(default="CAMPUS_001", description="Campus identifier")
+    department_id: str = Field(default="DEPT_001", description="Department identifier")
 
 
 class StudentUpdate(BaseModel):
@@ -60,6 +63,9 @@ class SubjectCreate(BaseModel):
     is_core: bool = False
     credits: int = 3
     total_classes_planned: int = 40
+    # Multi-Campus Support
+    campus_id: str = Field(default="CAMPUS_001", description="Campus identifier")
+    department_id: str = Field(default="DEPT_001", description="Department identifier")
 
 
 class Subject(SubjectCreate):
@@ -138,6 +144,9 @@ class AcademicPerformance(BaseModel):
     mid_term_marks: float = Field(ge=0, le=30)  # out of 30
     cie_marks: float = Field(ge=0, le=20)  # out of 20
     total_internal: Optional[float] = None  # Sum of mid_term + cie
+    # Multi-Campus Support
+    campus_id: str = Field(default="CAMPUS_001", description="Campus identifier")
+    department_id: str = Field(default="DEPT_001", description="Department identifier")
 
     class Config:
         from_attributes = True
