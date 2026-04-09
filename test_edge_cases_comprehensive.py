@@ -617,7 +617,7 @@ if __name__ == "__main__":
     print("="*70 + "\n")
     
     # Phase 1
-    print("\n📚 PHASE 1: ATTENDANCE OPTIMIZATION - EDGE CASES")
+    print("\n[PHASE 1] ATTENDANCE OPTIMIZATION - EDGE CASES")
     print("-" * 70)
     test_phase1 = TestPhase1AttendanceEdgeCases()
     test_phase1.test_zero_attendance()
