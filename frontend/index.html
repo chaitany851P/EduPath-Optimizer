@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>EduPath Optimizer</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --card: #1a2236;
+    --border: #1e2d45;
+    --accent: #00e5ff;
+    --accent2: #7c3aed;
+    --green: #10b981;
+    --yellow: #f59e0b;
+    --red: #ef4444;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --mono: 'Space Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ─── Sidebar ─── */
+  .sidebar {
+    position: fixed;
+    left: 0; top: 0; bottom: 0;
+    width: 240px;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+    padding: 0 0 24px;
+  }
+
+  .logo {
+    padding: 28px 20px 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo-mark {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .logo-name {
+    font-family: var(--mono);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.1;
+  }
+
+  .logo-name span { color: var(--accent); }
+
+  .nav {
+    flex: 1;
+    padding: 16px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .nav-section {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    padding: 12px 8px 6px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 500;
+    border: 1px solid transparent;
+  }
+
+  .nav-item:hover { color: var(--text); background: var(--card); }
+
+  .nav-item.active {
+    color: var(--accent);
+    background: rgba(0,229,255,0.07);
+    border-color: rgba(0,229,255,0.15);
+  }
+
+  .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+
+  .sidebar-footer {
+    padding: 0 20px;
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+  }
+
+  .student-badge {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+  }
+
+  .student-badge .name { font-size: 13px; font-weight: 600; }
+  .student-badge .track {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  /* ─── Main ─── */
+  .main {
+    margin-left: 240px;
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+  }
+
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+
+  .topbar-title {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .topbar-title span { color: var(--text); }
+
+  .status-pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .pill-safe { background: rgba(16,185,129,0.12); color: var(--green); border: 1px solid rgba(16,185,129,0.2); }
+  .pill-risk { background: rgba(245,158,11,0.12); color: var(--yellow); border: 1px solid rgba(245,158,11,0.2); }
+  .pill-critical { background: rgba(239,68,68,0.12); color: var(--red); border: 1px solid rgba(239,68,68,0.2); }
+
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; animation: pulse 1.5s infinite; }
+
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  /* ─── Content ─── */
+  .content { padding: 32px; }
+
+  .page { display: none; }
+  .page.active { display: block; animation: fadeIn 0.25s ease; }
+
+  @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+
+  /* ─── Stats Grid ─── */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .stat-card:hover { border-color: rgba(0,229,255,0.3); }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent-color, var(--accent));
+  }
+
+  .stat-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .stat-value {
+    font-family: var(--mono);
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--accent-color, var(--accent));
+    line-height: 1;
+  }
+
+  .stat-sub {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+
+  /* ─── Gauge ─── */
+  .gauge-wrap {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 24px;
+  }
+
+  .gauge-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    flex: 0 0 280px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .gauge-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .gauge-svg { width: 180px; height: 100px; }
+
+  .gauge-number {
+    font-family: var(--mono);
+    font-size: 36px;
+    font-weight: 700;
+    margin-top: 12px;
+  }
+
+  /* ─── Calendar ─── */
+  .calendar-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    flex: 1;
+  }
+
+  .section-title {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+  }
+
+  .cal-header {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+    text-align: center;
+    padding: 4px;
+  }
+
+  .cal-day {
+    aspect-ratio: 1;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: 1px solid transparent;
+  }
+
+  .cal-day:hover { border-color: var(--accent); }
+  .cal-day.present { background: rgba(16,185,129,0.2); color: var(--green); }
+  .cal-day.absent { background: rgba(239,68,68,0.15); color: var(--red); }
+  .cal-day.priority { background: rgba(0,229,255,0.15); color: var(--accent); border-color: rgba(0,229,255,0.3); }
+  .cal-day.holiday { background: rgba(100,116,139,0.1); color: var(--muted); }
+  .cal-day.today { border-color: var(--accent); box-shadow: 0 0 8px rgba(0,229,255,0.3); }
+  .cal-day.empty { opacity: 0; pointer-events: none; }
+
+  /* ─── Two columns ─── */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+  /* ─── Date lists ─── */
+  .date-list { display: flex; flex-direction: column; gap: 8px; max-height: 320px; overflow-y: auto; }
+
+  .date-list::-webkit-scrollbar { width: 4px; }
+  .date-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+  .date-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: border-color 0.15s;
+  }
+
+  .date-item:hover { border-color: rgba(0,229,255,0.2); }
+
+  .date-item-left .date { font-family: var(--mono); font-size: 12px; color: var(--text); }
+  .date-item-left .subs { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  .impact-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .impact-fill {
+    width: 60px;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .impact-fill-inner {
+    height: 100%;
+    border-radius: 2px;
+    background: var(--accent);
+  }
+
+  .impact-score { font-family: var(--mono); font-size: 10px; color: var(--muted); }
+
+  /* ─── Form elements ─── */
+  .form-section { max-width: 600px; }
+
+  .form-row { margin-bottom: 20px; }
+
+  .form-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .form-input, .form-select {
+    width: 100%;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    padding: 11px 14px;
+    font-family: var(--sans);
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.15s;
+    appearance: none;
+  }
+
+  .form-input:focus, .form-select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(0,229,255,0.1);
+  }
+
+  .btn {
+    padding: 11px 24px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: all 0.15s;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: var(--bg);
+  }
+  .btn-primary:hover { opacity: 0.85; transform: translateY(-1px); }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+  .btn-ghost:hover { color: var(--text); border-color: var(--text); }
+
+  /* ─── Alert ─── */
+  .alert {
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    border-left: 3px solid;
+  }
+
+  .alert-success { background: rgba(16,185,129,0.07); border-color: var(--green); }
+  .alert-warning { background: rgba(245,158,11,0.07); border-color: var(--yellow); }
+  .alert-danger  { background: rgba(239,68,68,0.07); border-color: var(--red); }
+
+  .alert-icon { font-size: 20px; flex-shrink: 0; }
+  .alert-text { font-size: 14px; line-height: 1.5; }
+  .alert-text strong { display: block; margin-bottom: 2px; }
+
+  /* ─── Table ─── */
+  .data-table { width: 100%; border-collapse: collapse; }
+
+  .data-table th {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .data-table td {
+    padding: 12px 14px;
+    font-size: 13px;
+    border-bottom: 1px solid rgba(30,45,69,0.5);
+  }
+
+  .data-table tr:last-child td { border-bottom: none; }
+  .data-table tr:hover td { background: rgba(0,229,255,0.02); }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+
+  .badge-green { background: rgba(16,185,129,0.15); color: var(--green); }
+  .badge-yellow { background: rgba(245,158,11,0.15); color: var(--yellow); }
+  .badge-red { background: rgba(239,68,68,0.15); color: var(--red); }
+  .badge-blue { background: rgba(0,229,255,0.12); color: var(--accent); }
+  .badge-purple { background: rgba(124,58,237,0.15); color: #a78bfa; }
+
+  /* ─── Progress bars ─── */
+  .progress-track {
+    background: var(--border);
+    border-radius: 4px;
+    height: 6px;
+    overflow: hidden;
+    margin-top: 4px;
+  }
+
+  .progress-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 1s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  /* ─── Subj card ─── */
+  .subj-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .subj-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+  }
+
+  .subj-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .subj-name { font-size: 14px; font-weight: 600; }
+  .subj-code { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+
+  /* ─── Feasibility meter ─── */
+  .feasibility-ring {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto;
+  }
+
+  /* ─── Responsive ─── */
+  @media(max-width:1200px) { .stats-grid { grid-template-columns: repeat(2,1fr); } }
+  @media(max-width:900px) {
+    .sidebar { transform: translateX(-100%); }
+    .main { margin-left: 0; }
+    .two-col, .three-col { grid-template-columns: 1fr; }
+    .gauge-wrap { flex-direction: column; }
+    .gauge-card { flex: 0 0 auto; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ─── Sidebar ─── -->
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logo-mark">SGP Project 2026</div>
+    <div class="logo-name">Edu<span>Path</span><br>Optimizer</div>
+  </div>
+
+  <nav class="nav">
+    <div class="nav-section">Overview</div>
+    <div class="nav-item active" onclick="showPage('dashboard',this)">
+      <span class="nav-icon">◈</span> Dashboard
+    </div>
+    <div class="nav-item" onclick="showPage('optimization',this)">
+      <span class="nav-icon">⊕</span> Optimizer
+    </div>
+
+    <div class="nav-section">Academic</div>
+    <div class="nav-item" onclick="showPage('attendance',this)">
+      <span class="nav-icon">◷</span> Attendance
+    </div>
+    <div class="nav-item" onclick="showPage('subjects',this)">
+      <span class="nav-icon">◧</span> Subjects
+    </div>
+
+    <div class="nav-section">Admin</div>
+    <div class="nav-item" onclick="showPage('events',this)">
+      <span class="nav-icon">◉</span> Events
+    </div>
+    <div class="nav-item" onclick="showPage('students',this)">
+      <span class="nav-icon">◈</span> Students
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="student-badge">
+      <div class="name">Chaitany Thakar</div>
+      <div class="track">⬡ Data Science Track</div>
+    </div>
+  </div>
+</aside>
+
+<!-- ─── Main ─── -->
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-title">EduPath / <span id="topbar-page">Dashboard</span></div>
+    <div class="status-pill pill-safe" id="status-pill">
+      <span class="dot"></span> <span id="status-text">ON TRACK</span>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ══ Dashboard ══ -->
+    <div class="page active" id="page-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card" style="--accent-color:#00e5ff">
+          <div class="stat-label">Attendance</div>
+          <div class="stat-value" id="stat-attendance">82.4%</div>
+          <div class="stat-sub">Target: 75% minimum</div>
+        </div>
+        <div class="stat-card" style="--accent-color:#10b981">
+          <div class="stat-label">Classes Attended</div>
+          <div class="stat-value" id="stat-attended">134</div>
+          <div class="stat-sub">of <span id="stat-total">163</span> total held</div>
+        </div>
+        <div class="stat-card" style="--accent-color:#f59e0b">
+          <div class="stat-label">Buffer Days</div>
+          <div class="stat-value" id="stat-buffer">18</div>
+          <div class="stat-sub">Safe to skip strategically</div>
+        </div>
+        <div class="stat-card" style="--accent-color:#7c3aed">
+          <div class="stat-label">Career Impact</div>
+          <div class="stat-value">7.2</div>
+          <div class="stat-sub">Average priority score</div>
+        </div>
+      </div>
+
+      <div class="gauge-wrap">
+        <div class="gauge-card">
+          <div class="gauge-label">Attendance Gauge</div>
+          <svg class="gauge-svg" viewBox="0 0 180 100">
+            <path d="M 20 90 A 70 70 0 0 1 160 90" fill="none" stroke="#1e2d45" stroke-width="12" stroke-linecap="round"/>
+            <path id="gauge-path" d="M 20 90 A 70 70 0 0 1 160 90" fill="none" stroke="#00e5ff" stroke-width="12" stroke-linecap="round"
+              stroke-dasharray="220" stroke-dashoffset="40"/>
+            <circle cx="20" cy="90" r="5" fill="#1e2d45"/>
+            <circle cx="160" cy="90" r="5" fill="#1e2d45"/>
+            <!-- 75% marker -->
+            <line x1="90" y1="20" x2="90" y2="10" stroke="#f59e0b" stroke-width="2" transform="rotate(-22.5,90,90)"/>
+            <text x="60" y="96" fill="#f59e0b" font-size="9" font-family="Space Mono">75%</text>
+          </svg>
+          <div class="gauge-number" style="color:var(--accent)" id="gauge-num">82.4%</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:4px">Current Attendance</div>
+        </div>
+
+        <div class="calendar-card">
+          <div class="section-title">March 2026 — Attendance Map</div>
+          <div class="calendar-grid" id="cal-grid"></div>
+          <div style="display:flex;gap:16px;margin-top:16px;flex-wrap:wrap">
+            <span style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;background:rgba(16,185,129,0.3);border-radius:2px;display:inline-block"></span>Present</span>
+            <span style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;background:rgba(239,68,68,0.2);border-radius:2px;display:inline-block"></span>Absent</span>
+            <span style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;background:rgba(0,229,255,0.2);border-radius:2px;display:inline-block"></span>Priority</span>
+            <span style="font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px"><span style="width:10px;height:10px;background:rgba(100,116,139,0.15);border-radius:2px;display:inline-block"></span>Holiday</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Subject progress -->
+      <div class="two-col">
+        <div class="stat-card" style="--accent-color:#00e5ff; padding: 20px;">
+          <div class="stat-label" style="margin-bottom:16px">Subject-wise Attendance</div>
+          <div class="subj-list" id="subj-list"></div>
+        </div>
+
+        <div class="stat-card" style="--accent-color:#7c3aed; padding: 20px;">
+          <div class="stat-label" style="margin-bottom:16px">Career Track: Data Science</div>
+          <div style="margin-bottom:16px">
+            <div style="font-size:13px;color:var(--muted);margin-bottom:8px">Track alignment score</div>
+            <div style="font-family:var(--mono);font-size:40px;color:#7c3aed;line-height:1">84<span style="font-size:20px">%</span></div>
+            <div style="font-size:12px;color:var(--muted);margin-top:4px">Based on current subject selections</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                <span style="font-size:12px">Python & ML Subjects</span>
+                <span style="font-family:var(--mono);font-size:11px;color:var(--accent)">3/4</span>
+              </div>
+              <div class="progress-track"><div class="progress-fill" style="width:75%;background:var(--accent)"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                <span style="font-size:12px">Statistics & Analytics</span>
+                <span style="font-family:var(--mono);font-size:11px;color:#10b981">2/2</span>
+              </div>
+              <div class="progress-track"><div class="progress-fill" style="width:100%;background:#10b981"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                <span style="font-size:12px">Database & APIs</span>
+                <span style="font-family:var(--mono);font-size:11px;color:#f59e0b">1/2</span>
+              </div>
+              <div class="progress-track"><div class="progress-fill" style="width:50%;background:#f59e0b"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ Optimizer ══ -->
+    <div class="page" id="page-optimization">
+      <div id="opt-alert" class="alert alert-success">
+        <span class="alert-icon">✅</span>
+        <div class="alert-text">
+          <strong>Strategy Generated — Semester End: May 15, 2026</strong>
+          You have a buffer of 18 class(es) you can strategically skip while maintaining 75%.
+        </div>
+      </div>
+
+      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:24px">
+        <div class="stat-card" style="--accent-color:#00e5ff">
+          <div class="stat-label">Classes Remaining</div>
+          <div class="stat-value">47</div>
+          <div class="stat-sub">Until semester end</div>
+        </div>
+        <div class="stat-card" style="--accent-color:#10b981">
+          <div class="stat-label">Min. Classes Needed</div>
+          <div class="stat-value">29</div>
+          <div class="stat-sub">To maintain 75% target</div>
+        </div>
+        <div class="stat-card" style="--accent-color:#f59e0b">
+          <div class="stat-label">Skip Budget</div>
+          <div class="stat-value">18</div>
+          <div class="stat-sub">Strategically safe</div>
+        </div>
+      </div>
+
+      <div class="three-col">
+        <div class="stat-card" style="--accent-color:#00e5ff;padding:20px">
+          <div class="stat-label" style="margin-bottom:12px;color:var(--accent)">🎯 Career Priority</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Non-skippable for professional growth</div>
+          <div class="date-list" id="priority-list"></div>
+        </div>
+        <div class="stat-card" style="--accent-color:#f59e0b;padding:20px">
+          <div class="stat-label" style="margin-bottom:12px;color:#f59e0b">⚡ Buffer Dates</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Required for 75% threshold</div>
+          <div class="date-list" id="buffer-list"></div>
+        </div>
+        <div class="stat-card" style="--accent-color:#64748b;padding:20px">
+          <div class="stat-label" style="margin-bottom:12px">◌ Skip Safe</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Low impact — safe to skip</div>
+          <div class="date-list" id="skip-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ Attendance ══ -->
+    <div class="page" id="page-attendance">
+      <div class="two-col" style="margin-bottom:24px">
+        <div>
+          <div class="form-row">
+            <label class="form-label">Student ID</label>
+            <input class="form-input" type="text" placeholder="e.g. STU2024001" id="att-student-id"/>
+          </div>
+          <div class="form-row">
+            <label class="form-label">Subject Code</label>
+            <select class="form-select" id="att-subject">
+              <option value="CS401">CS401 — Python & Machine Learning</option>
+              <option value="CS402">CS402 — Statistics for Data Science</option>
+              <option value="CS403">CS403 — Database Systems</option>
+              <option value="CS404">CS404 — Web Technologies</option>
+              <option value="CS405">CS405 — Cyber Security Fundamentals</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <div class="form-row">
+            <label class="form-label">Date</label>
+            <input class="form-input" type="date" id="att-date"/>
+          </div>
+          <div class="form-row">
+            <label class="form-label">Status</label>
+            <select class="form-select" id="att-status">
+              <option value="present">Present</option>
+              <option value="absent">Absent</option>
+              <option value="holiday">Holiday</option>
+              <option value="university_event">University Event</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="recordAttendance()">Record Attendance</button>
+      <div style="height:24px"></div>
+
+      <div class="stat-card" style="padding:0;--accent-color:var(--accent)">
+        <div style="padding:20px;border-bottom:1px solid var(--border)">
+          <div class="section-title">Recent Attendance Log</div>
+        </div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Student ID</th>
+              <th>Subject</th>
+              <th>Date</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="att-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ Subjects ══ -->
+    <div class="page" id="page-subjects">
+      <div class="two-col">
+        <div>
+          <div style="margin-bottom:20px">
+            <div class="form-row">
+              <label class="form-label">Subject Code</label>
+              <input class="form-input" type="text" placeholder="e.g. CS401" id="sub-code"/>
+            </div>
+            <div class="form-row">
+              <label class="form-label">Subject Name</label>
+              <input class="form-input" type="text" placeholder="Python & Machine Learning" id="sub-name"/>
+            </div>
+            <div class="form-row">
+              <label class="form-label">Career Track</label>
+              <select class="form-select" id="sub-track">
+                <option value="data_science">Data Science</option>
+                <option value="iot">IoT</option>
+                <option value="cyber_security">Cyber Security</option>
+                <option value="web_development">Web Development</option>
+                <option value="ai_ml">AI / ML</option>
+                <option value="general">General</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label class="form-label">Core Subject?</label>
+              <select class="form-select" id="sub-core">
+                <option value="true">Yes — High Impact</option>
+                <option value="false">No — Standard</option>
+              </select>
+            </div>
+            <button class="btn btn-primary" onclick="addSubject()">Add Subject</button>
+          </div>
+        </div>
+
+        <div class="stat-card" style="--accent-color:var(--accent);padding:20px">
+          <div class="section-title">Registered Subjects</div>
+          <div class="subj-list" id="subj-full-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ Events ══ -->
+    <div class="page" id="page-events">
+      <div class="two-col">
+        <div class="form-section">
+          <div class="form-row">
+            <label class="form-label">Event Title</label>
+            <input class="form-input" type="text" placeholder="e.g. Techfest 2026" id="evt-title"/>
+          </div>
+          <div class="form-row">
+            <label class="form-label">Event Date</label>
+            <input class="form-input" type="date" id="evt-date"/>
+          </div>
+          <div class="form-row">
+            <label class="form-label">Is this a Holiday?</label>
+            <select class="form-select" id="evt-holiday">
+              <option value="true">Yes — Subtract from attendance</option>
+              <option value="false">No — Regular event</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label class="form-label">Description (optional)</label>
+            <input class="form-input" type="text" placeholder="Add details..." id="evt-desc"/>
+          </div>
+          <button class="btn btn-primary" onclick="addEvent()">Add Event</button>
+        </div>
+
+        <div class="stat-card" style="--accent-color:var(--accent);padding:20px">
+          <div class="section-title">University Calendar</div>
+          <div class="date-list" id="events-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ Students ══ -->
+    <div class="page" id="page-students">
+      <div class="two-col">
+        <div class="form-section">
+          <div class="form-row">
+            <label class="form-label">Student ID</label>
+            <input class="form-input" type="text" placeholder="STU2024001" id="stu-id"/>
+          </div>
+          <div class="form-row">
+            <label class="form-label">Full Name</label>
+            <input class="form-input" type="text" placeholder="Chaitany Thakar" id="stu-name"/>
+          </div>
+          <div class="form-row">
+            <label class="form-label">Email</label>
+            <input class="form-input" type="email" placeholder="student@college.edu" id="stu-email"/>
+          </div>
+          <div class="form-row">
+            <label class="form-label">Career Track</label>
+            <select class="form-select" id="stu-track">
+              <option value="data_science">Data Science</option>
+              <option value="iot">IoT</option>
+              <option value="cyber_security">Cyber Security</option>
+              <option value="web_development">Web Development</option>
+              <option value="ai_ml">AI / ML</option>
+              <option value="general">General</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label class="form-label">Target Attendance (%)</label>
+            <input class="form-input" type="number" value="75" min="75" max="100" id="stu-target"/>
+          </div>
+          <button class="btn btn-primary" onclick="addStudent()">Register Student</button>
+        </div>
+
+        <div class="stat-card" style="--accent-color:var(--accent);padding:0">
+          <div style="padding:20px;border-bottom:1px solid var(--border)">
+            <div class="section-title">Registered Students</div>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID</th><th>Name</th><th>Track</th><th>Target</th>
+              </tr>
+            </thead>
+            <tbody id="students-table"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</main>
+
+<script>
+// ─── State ───────────────────────────────────────────────
+const state = {
+  students: [
+    {id:'STU2024001', name:'Chaitany Thakar', track:'data_science', target:75, email:'ct@college.edu'},
+    {id:'STU2024002', name:'Aryan Mehta', track:'cyber_security', target:80, email:'am@college.edu'},
+    {id:'STU2024003', name:'Priya Patel', track:'iot', target:75, email:'pp@college.edu'},
+  ],
+  subjects: [
+    {code:'CS401', name:'Python & Machine Learning', track:'data_science', core:true, planned:40},
+    {code:'CS402', name:'Statistics for Data Science', track:'data_science', core:true, planned:36},
+    {code:'CS403', name:'Database Systems', track:'web_development', core:false, planned:40},
+    {code:'CS404', name:'Web Technologies', track:'web_development', core:false, planned:38},
+    {code:'CS405', name:'Cyber Security Fundamentals', track:'cyber_security', core:true, planned:36},
+  ],
+  attendance: [],
+  events: [
+    {title:'Holi Festival', date:'2026-03-14', holiday:true},
+    {title:'Techfest 2026', date:'2026-03-21', holiday:true},
+    {title:'Guest Lecture — AI', date:'2026-03-26', holiday:false},
+  ],
+  currentPage: 'dashboard',
+};
+
+// Fill in demo attendance
+(function generateDemoAttendance() {
+  const statuses = ['present','present','present','present','absent'];
+  for(let d=1;d<=18;d++){
+    const dt = new Date(2026,2,d);
+    if(dt.getDay()===0||dt.getDay()===6) continue;
+    state.subjects.forEach(s=>{
+      const st = statuses[Math.floor(Math.random()*statuses.length)];
+      state.attendance.push({studentId:'STU2024001', subjectCode:s.code, date:`2026-03-${String(d).padStart(2,'0')}`, status:st});
+    });
+  }
+})();
+
+// ─── Nav ─────────────────────────────────────────────────
+function showPage(id, el) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  el.classList.add('active');
+  state.currentPage = id;
+  const titles = {dashboard:'Dashboard',optimization:'Optimizer',attendance:'Attendance',subjects:'Subjects',events:'Events',students:'Students'};
+  document.getElementById('topbar-page').textContent = titles[id]||id;
+  if(id==='dashboard') renderDashboard();
+  if(id==='optimization') renderOptimization();
+  if(id==='attendance') renderAttendanceLog();
+  if(id==='subjects') renderSubjects();
+  if(id==='events') renderEvents();
+  if(id==='students') renderStudents();
+}
+
+// ─── Dashboard ───────────────────────────────────────────
+function getStudentStats(studentId) {
+  const recs = state.attendance.filter(r=>r.studentId===studentId);
+  const present = recs.filter(r=>r.status==='present').length;
+  const total = recs.length;
+  return {present, total, pct: total>0?Math.round(present/total*1000)/10:0};
+}
+
+function renderDashboard() {
+  const stats = getStudentStats('STU2024001');
+  document.getElementById('stat-attendance').textContent = stats.pct+'%';
+  document.getElementById('stat-attended').textContent = stats.present;
+  document.getElementById('stat-total').textContent = stats.total;
+
+  // Gauge
+  const pct = stats.pct/100;
+  const arcLen = 220;
+  const filled = arcLen * pct;
+  document.getElementById('gauge-path').setAttribute('stroke-dashoffset', arcLen - filled);
+  document.getElementById('gauge-path').setAttribute('stroke', pct>=0.8?'#10b981':pct>=0.75?'#00e5ff':'#ef4444');
+  document.getElementById('gauge-num').textContent = stats.pct+'%';
+
+  // Status pill
+  const pill = document.getElementById('status-pill');
+  const txt = document.getElementById('status-text');
+  pill.className = 'status-pill';
+  if(stats.pct>=80){pill.classList.add('pill-safe');txt.textContent='ON TRACK';}
+  else if(stats.pct>=75){pill.classList.add('pill-risk');txt.textContent='AT RISK';}
+  else{pill.classList.add('pill-critical');txt.textContent='CRITICAL';}
+
+  renderCalendar();
+  renderSubjectProgress();
+}
+
+function renderCalendar() {
+  const grid = document.getElementById('cal-grid');
+  const days = ['S','M','T','W','T','F','S'];
+  grid.innerHTML = days.map(d=>`<div class="cal-header">${d}</div>`).join('');
+
+  // March 2026 starts on Sunday
+  const startDay = 0; // Sunday
+  for(let i=0;i<startDay;i++) grid.innerHTML+=`<div class="cal-day empty"></div>`;
+
+  const holidayDates = new Set(state.events.filter(e=>e.holiday).map(e=>parseInt(e.date.split('-')[2])));
+
+  for(let d=1;d<=31;d++){
+    const dateStr = `2026-03-${String(d).padStart(2,'0')}`;
+    const dow = new Date(2026,2,d).getDay();
+    let cls = 'cal-day';
+    let label = d;
+
+    if(dow===0||dow===6){ cls+=' holiday'; }
+    else if(holidayDates.has(d)){ cls+=' holiday'; }
+    else {
+      const recs = state.attendance.filter(r=>r.studentId==='STU2024001' && r.date===dateStr);
+      if(recs.length>0){
+        const presentCount = recs.filter(r=>r.status==='present').length;
+        if(presentCount>recs.length/2) cls+=' present';
+        else cls+=' absent';
+      } else if(d>19) cls+=' priority';
+    }
+    if(d===19) cls+=' today';
+    grid.innerHTML+=`<div class="${cls}" title="${dateStr}">${label}</div>`;
+  }
+}
+
+function renderSubjectProgress() {
+  const list = document.getElementById('subj-list');
+  list.innerHTML = state.subjects.map(s=>{
+    const recs = state.attendance.filter(r=>r.studentId==='STU2024001'&&r.subjectCode===s.code);
+    const pres = recs.filter(r=>r.status==='present').length;
+    const total = recs.length;
+    const pct = total>0?Math.round(pres/total*100):0;
+    const color = pct>=80?'#10b981':pct>=75?'#f59e0b':'#ef4444';
+    return `
+      <div class="subj-item">
+        <div class="subj-row">
+          <div><div class="subj-name" style="font-size:13px">${s.name}</div>
+          <div class="subj-code">${s.code}</div></div>
+          <span style="font-family:var(--mono);font-size:13px;color:${color}">${pct}%</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" style="width:${pct}%;background:${color}"></div></div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ─── Optimizer ───────────────────────────────────────────
+function renderOptimization() {
+  const endDate = new Date(2026,4,15);
+  const today = new Date(2026,2,19);
+  const days = [];
+  let cur = new Date(today);
+  while(cur<=endDate){
+    if(cur.getDay()!==0&&cur.getDay()!==6) days.push(new Date(cur));
+    cur.setDate(cur.getDate()+1);
+  }
+
+  const CAREER_KEYWORDS = ['python','ml','machine learning','statistics','data','analytics'];
+  function isCareerDay(d){ return state.subjects.some(s=>CAREER_KEYWORDS.some(k=>s.name.toLowerCase().includes(k))&&(d.getDate()%state.subjects.length<2)); }
+
+  const priority=[], buffer=[], safe=[];
+  const holidayDays = new Set(state.events.filter(e=>e.holiday).map(e=>e.date));
+
+  days.forEach(d=>{
+    const ds = d.toISOString().split('T')[0];
+    if(holidayDays.has(ds)) return;
+    const dn = d.toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'});
+    const score = isCareerDay(d)?7+Math.random()*3:Math.random()*6;
+    const subjs = state.subjects.slice(d.getDate()%3, (d.getDate()%3)+2).map(s=>s.code);
+    const item = {date:dn, subjects:subjs.join(', '), score:Math.round(score*10)/10};
+    if(score>=7) priority.push(item);
+    else if(score>=3.5) buffer.push(item);
+    else safe.push(item);
+  });
+
+  function renderList(items, color) {
+    if(!items.length) return '<div style="font-size:12px;color:var(--muted);text-align:center;padding:20px">No dates in this category</div>';
+    return items.slice(0,8).map(it=>`
+      <div class="date-item">
+        <div class="date-item-left">
+          <div class="date">${it.date}</div>
+          <div class="subs">${it.subjects}</div>
+        </div>
+        <div class="impact-bar">
+          <div class="impact-fill"><div class="impact-fill-inner" style="width:${it.score*10}%;background:${color}"></div></div>
+          <span class="impact-score">${it.score}</span>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  document.getElementById('priority-list').innerHTML = renderList(priority,'var(--accent)');
+  document.getElementById('buffer-list').innerHTML = renderList(buffer,'#f59e0b');
+  document.getElementById('skip-list').innerHTML = renderList(safe,'#64748b');
+}
+
+// ─── Attendance Log ───────────────────────────────────────
+function renderAttendanceLog() {
+  const tbody = document.getElementById('att-table-body');
+  const recent = state.attendance.slice(-20).reverse();
+  tbody.innerHTML = recent.map(r=>{
+    const badgeClass = r.status==='present'?'badge-green':r.status==='absent'?'badge-red':'badge-blue';
+    return `<tr>
+      <td style="font-family:var(--mono);font-size:12px">${r.studentId}</td>
+      <td>${r.subjectCode}</td>
+      <td style="font-family:var(--mono);font-size:12px">${r.date}</td>
+      <td><span class="badge ${badgeClass}">${r.status.toUpperCase()}</span></td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:24px">No records yet</td></tr>';
+}
+
+function recordAttendance() {
+  const sid = document.getElementById('att-student-id').value.trim();
+  const sub = document.getElementById('att-subject').value;
+  const dt = document.getElementById('att-date').value;
+  const st = document.getElementById('att-status').value;
+  if(!sid||!dt){ alert('Fill in Student ID and Date'); return; }
+  state.attendance.push({studentId:sid, subjectCode:sub, date:dt, status:st});
+  renderAttendanceLog();
+  showToast('Attendance recorded ✓');
+}
+
+// ─── Subjects ────────────────────────────────────────────
+function renderSubjects() {
+  const list = document.getElementById('subj-full-list');
+  list.innerHTML = state.subjects.map(s=>{
+    const trackColors = {data_science:'badge-blue',iot:'badge-green',cyber_security:'badge-red',web_development:'badge-purple',ai_ml:'badge-blue',general:'badge-yellow'};
+    return `<div class="subj-item">
+      <div class="subj-row">
+        <div><div class="subj-name">${s.name}</div><div class="subj-code">${s.code}</div></div>
+        <div style="display:flex;gap:6px;align-items:center">
+          ${s.core?'<span class="badge badge-blue">CORE</span>':''}
+          <span class="badge ${trackColors[s.track]||'badge-yellow'}">${s.track.replace('_',' ').toUpperCase()}</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function addSubject() {
+  const code = document.getElementById('sub-code').value.trim();
+  const name = document.getElementById('sub-name').value.trim();
+  if(!code||!name){ alert('Fill in code and name'); return; }
+  state.subjects.push({code,name,track:document.getElementById('sub-track').value,core:document.getElementById('sub-core').value==='true',planned:40});
+  renderSubjects();
+  showToast('Subject added ✓');
+}
+
+// ─── Events ──────────────────────────────────────────────
+function renderEvents() {
+  const list = document.getElementById('events-list');
+  list.innerHTML = state.events.map((e,i)=>`
+    <div class="date-item">
+      <div class="date-item-left">
+        <div class="date">${e.title}</div>
+        <div class="subs">${e.date}</div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span class="badge ${e.holiday?'badge-red':'badge-blue'}">${e.holiday?'HOLIDAY':'EVENT'}</span>
+        <button onclick="deleteEvent(${i})" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px">×</button>
+      </div>
+    </div>
+  `).join('') || '<div style="font-size:12px;color:var(--muted);text-align:center;padding:20px">No events yet</div>';
+}
+
+function addEvent() {
+  const title = document.getElementById('evt-title').value.trim();
+  const date = document.getElementById('evt-date').value;
+  if(!title||!date){ alert('Fill in title and date'); return; }
+  state.events.push({title, date, holiday:document.getElementById('evt-holiday').value==='true', desc:document.getElementById('evt-desc').value});
+  renderEvents();
+  showToast('Event added ✓');
+}
+
+function deleteEvent(i) {
+  state.events.splice(i,1);
+  renderEvents();
+}
+
+// ─── Students ────────────────────────────────────────────
+function renderStudents() {
+  const tbody = document.getElementById('students-table');
+  const trackLabels = {data_science:'Data Science',iot:'IoT',cyber_security:'Cyber Sec',web_development:'Web Dev',ai_ml:'AI/ML',general:'General'};
+  const trackBadges = {data_science:'badge-blue',iot:'badge-green',cyber_security:'badge-red',web_development:'badge-purple',ai_ml:'badge-blue',general:'badge-yellow'};
+  tbody.innerHTML = state.students.map(s=>`
+    <tr>
+      <td style="font-family:var(--mono);font-size:12px">${s.id}</td>
+      <td>${s.name}</td>
+      <td><span class="badge ${trackBadges[s.track]||'badge-yellow'}">${trackLabels[s.track]||s.track}</span></td>
+      <td style="font-family:var(--mono)">${s.target}%</td>
+    </tr>
+  `).join('');
+}
+
+function addStudent() {
+  const id = document.getElementById('stu-id').value.trim();
+  const name = document.getElementById('stu-name').value.trim();
+  if(!id||!name){ alert('Fill in ID and name'); return; }
+  state.students.push({id,name,track:document.getElementById('stu-track').value,target:parseInt(document.getElementById('stu-target').value)||75,email:document.getElementById('stu-email').value});
+  renderStudents();
+  showToast('Student registered ✓');
+}
+
+// ─── Toast ───────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.textContent = msg;
+  Object.assign(t.style,{
+    position:'fixed',bottom:'24px',right:'24px',background:'var(--green)',color:'#000',
+    padding:'12px 20px',borderRadius:'8px',fontFamily:'var(--mono)',fontSize:'12px',
+    fontWeight:'700',zIndex:'9999',animation:'fadeIn 0.2s ease',boxShadow:'0 4px 20px rgba(16,185,129,0.3)'
+  });
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(),2500);
+}
+
+// ─── Init ─────────────────────────────────────────────────
+document.getElementById('att-date').valueAsDate = new Date(2026,2,19);
+renderDashboard();
+renderStudents();
+</script>
+</body>
+</html>

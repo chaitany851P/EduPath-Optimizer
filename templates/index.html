@@ -1,140 +1,858 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduPath Optimizer | Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>EduPath Optimizer Pro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #f0f4ff;
+      --surface: #ffffff;
+      --card: #f8faff;
+      --border: #e2e8f8;
+      --indigo: #4f46e5;
+      --indigo-light: #818cf8;
+      --indigo-dark: #3730a3;
+      --indigo-bg: #eef2ff;
+      --green: #059669;
+      --green-bg: #ecfdf5;
+      --yellow: #d97706;
+      --yellow-bg: #fffbeb;
+      --red: #dc2626;
+      --red-bg: #fef2f2;
+      --text: #0f172a;
+      --muted: #64748b;
+      --mono: 'Space Mono', monospace;
+      --sans: 'Plus Jakarta Sans', sans-serif;
+      --shadow: 0 1px 3px rgba(79,70,229,0.08), 0 4px 16px rgba(79,70,229,0.06);
+      --shadow-lg: 0 8px 32px rgba(79,70,229,0.12);
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── Login ── */
+    #login-section {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+      padding: 24px;
+    }
+
+    .login-card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 48px 40px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.15);
+    }
+
+    .login-logo {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .login-logo .mark {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--indigo);
+      margin-bottom: 8px;
+    }
+
+    .login-logo h1 {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .login-logo h1 span { color: var(--indigo); }
+
+    .login-logo p {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    .form-group { margin-bottom: 16px; }
+
+    .form-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-family: var(--sans);
+      font-size: 14px;
+      color: var(--text);
+      background: var(--card);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .form-input:focus { border-color: var(--indigo); }
+
+    .btn-primary {
+      width: 100%;
+      padding: 13px;
+      background: var(--indigo);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-family: var(--sans);
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: all 0.15s;
+    }
+
+    .btn-primary:hover { background: var(--indigo-dark); transform: translateY(-1px); }
+
+    .login-roles {
+      margin-top: 20px;
+      padding: 14px;
+      background: var(--indigo-bg);
+      border-radius: 10px;
+      font-size: 12px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.8;
+    }
+
+    .login-roles strong { color: var(--indigo); }
+
+    /* ── Dashboard Shell ── */
+    #dashboard { display: none; min-height: 100vh; }
+
+    .topbar {
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 1px 0 var(--border);
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .topbar-logo {
+      font-family: var(--mono);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--indigo);
+    }
+
+    .topbar-divider {
+      width: 1px;
+      height: 20px;
+      background: var(--border);
+    }
+
+    .topbar-welcome {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--muted);
+    }
+
+    .topbar-welcome strong { color: var(--text); }
+
+    .topbar-right { display: flex; align-items: center; gap: 12px; }
+
+    .role-badge {
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .role-admin    { background: #fef3c7; color: #92400e; }
+    .role-teacher  { background: #dbeafe; color: #1e40af; }
+    .role-student  { background: var(--indigo-bg); color: var(--indigo-dark); }
+
+    .btn-logout {
+      padding: 7px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      background: #fff;
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-logout:hover { border-color: var(--red); color: var(--red); }
+
+    .content { padding: 32px; max-width: 1100px; margin: 0 auto; }
+
+    /* ── Cards ── */
+    .card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .card-sub {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+
+    /* ── Stats Row ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+      border-top: 3px solid var(--accent, var(--indigo));
+    }
+
+    .stat-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-family: var(--mono);
+      font-size: 30px;
+      font-weight: 700;
+      color: var(--accent, var(--indigo));
+      line-height: 1;
+    }
+
+    .stat-hint { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+    /* ── Form row ── */
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+    .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+
+    .field { display: flex; flex-direction: column; gap: 6px; }
+
+    .field label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+    }
+
+    .field input, .field select {
+      padding: 10px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-family: var(--sans);
+      font-size: 14px;
+      color: var(--text);
+      background: var(--card);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .field input:focus, .field select:focus { border-color: var(--indigo); }
+
+    .btn-action {
+      padding: 11px 24px;
+      background: var(--indigo);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-action:hover { background: var(--indigo-dark); transform: translateY(-1px); }
+
+    /* ── Alert box ── */
+    .alert {
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      font-size: 14px;
+      line-height: 1.6;
+      border-left: 4px solid;
+    }
+
+    .alert-icon { font-size: 20px; flex-shrink: 0; }
+    .alert strong { display: block; font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+
+    .alert-success { background: var(--green-bg); border-color: var(--green); color: #065f46; }
+    .alert-warning { background: var(--yellow-bg); border-color: var(--yellow); color: #92400e; }
+    .alert-danger  { background: var(--red-bg); border-color: var(--red); color: #991b1b; }
+    .alert-info    { background: var(--indigo-bg); border-color: var(--indigo); color: var(--indigo-dark); }
+
+    /* ── Date tags ── */
+    .tag-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+
+    .tag {
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      border: 1px solid;
+    }
+
+    .tag-career  { background: var(--indigo-bg); color: var(--indigo-dark); border-color: #c7d2fe; }
+    .tag-buffer  { background: var(--yellow-bg); color: #92400e; border-color: #fde68a; }
+    .tag-empty   { font-size: 13px; color: var(--muted); font-family: var(--sans); padding: 0; border: none; background: none; }
+
+    /* ── Table ── */
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table th {
+      font-size: 11px; font-weight: 600; text-transform: uppercase;
+      letter-spacing: 1px; color: var(--muted); padding: 10px 14px;
+      text-align: left; border-bottom: 1px solid var(--border);
+    }
+    .data-table td { padding: 12px 14px; font-size: 13px; border-bottom: 1px solid #f1f5f9; }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tr:hover td { background: var(--card); }
+
+    /* ── Progress bar ── */
+    .progress { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin-top: 4px; }
+    .progress-fill { height: 100%; border-radius: 3px; transition: width 0.8s ease; }
+
+    /* ── Section heading ── */
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .section-head h2 { font-size: 20px; font-weight: 800; }
+    .section-head p  { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+    /* ── Two col layout ── */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+    /* ── Role views ── */
+    .view { display: none; }
+    .view.active { display: block; animation: fadeUp 0.25s ease; }
+
+    @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed; bottom: 28px; right: 28px;
+      background: var(--indigo); color: #fff;
+      padding: 12px 20px; border-radius: 10px;
+      font-size: 13px; font-weight: 600;
+      box-shadow: var(--shadow-lg);
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.2s;
+      z-index: 999;
+    }
+
+    #toast.show { opacity: 1; }
+
+    @media(max-width:700px) {
+      .form-row, .form-row-3, .two-col, .stats-row { grid-template-columns: 1fr; }
+      .content { padding: 16px; }
+    }
+  </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
-    <div class="container mx-auto px-4 py-8">
-        <header class="text-center mb-10">
-            <h1 class="text-4xl font-bold text-blue-800">🎓 EduPath Optimizer</h1>
-            <p class="text-gray-600 mt-2">Strategic Attendance Suggestion System</p>
-        </header>
+<body>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Input Form -->
-            <div class="bg-white p-6 rounded-xl shadow-md border border-gray-100">
-                <h2 class="text-xl font-semibold mb-4 text-gray-700">Enter Your Details</h2>
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Semester Start</label>
-                        <input type="date" id="start_date" class="w-full mt-1 p-2 border rounded-md" value="2026-01-01">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Semester End</label>
-                        <input type="date" id="end_date" class="w-full mt-1 p-2 border rounded-md" value="2026-05-30">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Classes Attended So Far</label>
-                        <input type="number" id="current_attended" class="w-full mt-1 p-2 border rounded-md" value="0">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">Career Track</label>
-                        <select id="career_track" class="w-full mt-1 p-2 border rounded-md">
-                            <option value="Data Science">Data Science</option>
-                            <option value="IOT">IOT</option>
-                            <option value="Cyber Security">Cyber Security</option>
-                            <option value="Computer Graphics">Computer Graphics</option>
-                        </select>
-                    </div>
-                    <button onclick="calculate()" class="w-full bg-blue-600 text-white font-bold py-3 rounded-md hover:bg-blue-700 transition">Optimize My Schedule</button>
-                </div>
-            </div>
-
-            <!-- Results Section -->
-            <div class="lg:col-span-2 space-y-6">
-                <div id="result-card" class="hidden bg-white p-6 rounded-xl shadow-md border border-blue-200">
-                    <h2 class="text-2xl font-bold text-blue-800 mb-2">Your Smart Strategy</h2>
-                    <p id="logic-explanation" class="text-lg text-gray-700 bg-blue-50 p-4 rounded-lg mb-4 border-l-4 border-blue-500"></p>
-                    
-                    <div class="grid grid-cols-2 gap-4 mb-6">
-                        <div class="p-4 bg-gray-100 rounded-lg">
-                            <p class="text-sm text-gray-500">Working Days in Sem</p>
-                            <p id="total-days" class="text-2xl font-bold"></p>
-                        </div>
-                        <div class="p-4 bg-gray-100 rounded-lg">
-                            <p class="text-sm text-gray-500">Classes to Attend</p>
-                            <p id="gap-to-fill" class="text-2xl font-bold text-red-600"></p>
-                        </div>
-                    </div>
-
-                    <div class="space-y-4">
-                        <h3 class="font-bold text-gray-700">📅 Priority Career Dates (High Impact)</h3>
-                        <div id="career-dates" class="flex flex-wrap gap-2"></div>
-
-                        <h3 class="font-bold text-gray-700">📅 General Buffer Dates (To Hit %)</h3>
-                        <div id="buffer-dates" class="flex flex-wrap gap-2"></div>
-                    </div>
-                </div>
-
-                <!-- Loading State -->
-                <div id="loading" class="hidden text-center py-20">
-                    <p class="text-xl text-gray-500 animate-pulse">Calculating your best path...</p>
-                </div>
-            </div>
-        </div>
+<!-- ══════════════ LOGIN ══════════════ -->
+<div id="login-section">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="mark">SGP Project 2026</div>
+      <h1>Edu<span>Path</span> Optimizer</h1>
+      <p>Strategic AI Attendance Assistant</p>
     </div>
 
-    <script>
-        async function calculate() {
-            const btn = document.querySelector('button');
-            const resultCard = document.getElementById('result-card');
-            const loading = document.getElementById('loading');
+    <div class="form-group">
+      <label class="form-label">Username</label>
+      <input class="form-input" type="text" id="username" placeholder="admin1 / teacher1 / 2024001"/>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password</label>
+      <input class="form-input" type="password" id="password" placeholder="Password"
+             onkeydown="if(event.key==='Enter') login()"/>
+    </div>
+    <button class="btn-primary" onclick="login()">Login →</button>
 
-            // Show loading
-            resultCard.classList.add('hidden');
-            loading.classList.remove('hidden');
+    <div class="login-roles">
+      <strong>Demo Credentials</strong><br>
+      Admin: <strong>admin1</strong> / 123 &nbsp;|&nbsp;
+      Teacher: <strong>teacher1</strong> / 123 &nbsp;|&nbsp;
+      Student: <strong>2024001</strong> / 123
+    </div>
+  </div>
+</div>
 
-            const payload = {
-                start_date: document.getElementById('start_date').value,
-                end_date: document.getElementById('end_date').value,
-                current_attended: parseInt(document.getElementById('current_attended').value),
-                career_track: document.getElementById('career_track').value,
-                target_percentage: 75.0,
-                country_code: "IN"
-            };
+<!-- ══════════════ DASHBOARD ══════════════ -->
+<div id="dashboard">
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-logo">EduPath</div>
+      <div class="topbar-divider"></div>
+      <div class="topbar-welcome">Welcome, <strong id="welcome-name">—</strong></div>
+    </div>
+    <div class="topbar-right">
+      <span class="role-badge" id="role-badge">—</span>
+      <button class="btn-logout" onclick="logout()">Logout</button>
+    </div>
+  </div>
 
-            try {
-                const response = await fetch('/calculate-strategy', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
+  <div class="content">
 
-                const data = await response.json();
+    <!-- ── ADMIN VIEW ── -->
+    <div class="view" id="admin-view">
+      <div class="section-head">
+        <div>
+          <h2>Admin Panel</h2>
+          <p>Manage university fests and holidays</p>
+        </div>
+      </div>
 
-                if (response.ok) {
-                    loading.classList.add('hidden');
-                    resultCard.classList.remove('hidden');
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">Add University Fest / Holiday</div>
+          <div class="card-sub">This date will be excluded from all student attendance calculations</div>
+          <div class="field" style="margin-bottom:14px">
+            <label>Fest / Event Name</label>
+            <input type="text" id="fest_name" placeholder="e.g. Techfest 2026"/>
+          </div>
+          <div class="field" style="margin-bottom:20px">
+            <label>Event Date</label>
+            <input type="date" id="fest_date"/>
+          </div>
+          <button class="btn-action" onclick="addFest()">+ Add Holiday</button>
+          <div id="fest-msg" style="margin-top:12px;font-size:13px;color:var(--green)"></div>
+        </div>
 
-                    document.getElementById('logic-explanation').innerText = data.strategic_plan.logic_explanation;
-                    document.getElementById('total-days').innerText = data.meta_data.total_working_days;
-                    document.getElementById('gap-to-fill').innerText = data.attendance_math.gap_to_fill;
+        <div class="card">
+          <div class="card-title">Registered Fests</div>
+          <div class="card-sub">All holidays subtracted from attendance count</div>
+          <div id="fests-list" style="font-size:13px;color:var(--muted)">Loading...</div>
+        </div>
+      </div>
+    </div>
 
-                    // Render Career Dates (Green)
-                    const careerContainer = document.getElementById('career-dates');
-                    careerContainer.innerHTML = '';
-                    data.strategic_plan.career_priority_dates.forEach(date => {
-                        careerContainer.innerHTML += `<span class="px-3 py-1 bg-green-100 text-green-700 border border-green-300 rounded-full text-sm font-medium">${date}</span>`;
-                    });
+    <!-- ── TEACHER VIEW ── -->
+    <div class="view" id="teacher-view">
+      <div class="section-head">
+        <div>
+          <h2>Teacher Panel</h2>
+          <p>Update student attendance records</p>
+        </div>
+      </div>
 
-                    // Render Buffer Dates (Blue)
-                    const bufferContainer = document.getElementById('buffer-dates');
-                    bufferContainer.innerHTML = '';
-                    data.strategic_plan.buffer_attendance_dates.forEach(date => {
-                        bufferContainer.innerHTML += `<span class="px-3 py-1 bg-blue-100 text-blue-700 border border-blue-300 rounded-full text-sm font-medium">${date}</span>`;
-                    });
-                } else {
-                    alert("Error: " + data.detail);
-                }
-            } catch (err) {
-                alert("Connection failed. Make sure your Backend is running.");
-            } finally {
-                loading.classList.add('hidden');
-            }
-        }
-    </script>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-title">Update Attendance</div>
+          <div class="card-sub">Enter student ID and their new total attended count</div>
+          <div class="field" style="margin-bottom:14px">
+            <label>Student ID</label>
+            <input type="text" id="student_id" placeholder="e.g. 2024001"/>
+          </div>
+          <div class="field" style="margin-bottom:20px">
+            <label>New Attended Count</label>
+            <input type="number" id="att_count" placeholder="e.g. 42" min="0"/>
+          </div>
+          <button class="btn-action" onclick="updateAtt()">Update Record</button>
+          <div id="att-msg" style="margin-top:12px;font-size:13px;color:var(--green)"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Student Roster</div>
+          <div class="card-sub">All registered students and attendance status</div>
+          <div id="students-table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr><th>ID</th><th>Name</th><th>Track</th><th>Attended</th></tr>
+              </thead>
+              <tbody id="students-tbody">
+                <tr><td colspan="4" style="text-align:center;color:var(--muted);padding:20px">Loading...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── STUDENT VIEW ── -->
+    <div class="view" id="student-view">
+      <div class="section-head">
+        <div>
+          <h2>My Attendance Strategy</h2>
+          <p>Personalized roadmap based on your career track</p>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-row" id="student-stats" style="display:none">
+        <div class="stat-card" style="--accent:#4f46e5">
+          <div class="stat-label">Career Track</div>
+          <div class="stat-value" style="font-size:18px;font-family:var(--sans);font-weight:700" id="st-track">—</div>
+        </div>
+        <div class="stat-card" style="--accent:#059669">
+          <div class="stat-label">Classes Attended</div>
+          <div class="stat-value" id="st-attended">—</div>
+          <div class="stat-hint">Recorded in system</div>
+        </div>
+        <div class="stat-card" style="--accent:#d97706">
+          <div class="stat-label">Gap to Fill</div>
+          <div class="stat-value" id="st-gap">—</div>
+          <div class="stat-hint">More classes needed</div>
+        </div>
+      </div>
+
+      <!-- Alert -->
+      <div id="st-alert"></div>
+
+      <!-- Date lists -->
+      <div class="two-col" id="st-dates-section" style="display:none">
+        <div class="card">
+          <div class="card-title">🎯 Career Priority Dates</div>
+          <div class="card-sub">Non-skippable — aligned to your career track</div>
+          <div class="tag-grid" id="p-dates"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">⚡ Buffer Dates</div>
+          <div class="card-sub">Attend these to meet your 75% threshold</div>
+          <div class="tag-grid" id="g-dates"></div>
+        </div>
+      </div>
+
+      <!-- Manual Calculator -->
+      <div class="card" style="margin-top:20px">
+        <div class="card-title">Manual Strategy Calculator</div>
+        <div class="card-sub">Run a custom calculation for any date range or target</div>
+        <div class="form-row">
+          <div class="field">
+            <label>Start Date</label>
+            <input type="date" id="calc-start" value="2026-01-01"/>
+          </div>
+          <div class="field">
+            <label>End Date</label>
+            <input type="date" id="calc-end" value="2026-05-30"/>
+          </div>
+        </div>
+        <div class="form-row-3">
+          <div class="field">
+            <label>Classes Attended</label>
+            <input type="number" id="calc-attended" placeholder="e.g. 45" min="0"/>
+          </div>
+          <div class="field">
+            <label>Target %</label>
+            <input type="number" id="calc-target" value="75" min="0" max="100"/>
+          </div>
+          <div class="field">
+            <label>Career Track</label>
+            <select id="calc-track">
+              <option>Data Science</option>
+              <option>Cyber Security</option>
+              <option>IOT</option>
+              <option>Computer Graphics</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn-action" onclick="runCalculator()">Calculate Strategy</button>
+
+        <div id="calc-result" style="margin-top:20px"></div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div>
+
+<div id="toast"></div>
+
+<script>
+  let token = "";
+  let currentRole = "";
+
+  // ── LOGIN ──────────────────────────────────────
+  async function login() {
+    const fd = new FormData();
+    fd.append('username', document.getElementById('username').value.trim());
+    fd.append('password', document.getElementById('password').value);
+
+    const res = await fetch('/token', { method: 'POST', body: fd });
+    const data = await res.json();
+
+    if (!res.ok) {
+      showToast('❌ ' + (data.detail || 'Login failed'), true);
+      return;
+    }
+
+    token = data.access_token;
+    currentRole = data.role;
+
+    document.getElementById('login-section').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    document.getElementById('welcome-name').textContent = data.name;
+
+    const badge = document.getElementById('role-badge');
+    badge.textContent = data.role.toUpperCase();
+    badge.className = `role-badge role-${data.role}`;
+
+    if (data.role === 'admin')   showView('admin-view',   loadAdminData);
+    if (data.role === 'teacher') showView('teacher-view', loadTeacherData);
+    if (data.role === 'student') showView('student-view', loadStudentData);
+  }
+
+  function logout() { location.reload(); }
+
+  function showView(id, cb) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    if (cb) cb();
+  }
+
+  // ── ADMIN ──────────────────────────────────────
+  async function loadAdminData() {
+    const res = await fetch('/admin/fests', { headers: auth() });
+    if (!res.ok) return;
+    const data = await res.json();
+    const el = document.getElementById('fests-list');
+    if (!data.fests.length) { el.textContent = 'No fests registered yet.'; return; }
+    el.innerHTML = data.fests.map(f =>
+      `<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)">
+        <span style="font-weight:600">${f.name}</span>
+        <span style="font-family:var(--mono);font-size:12px;color:var(--muted)">${f.date}</span>
+      </div>`
+    ).join('');
+  }
+
+  async function addFest() {
+    const name = document.getElementById('fest_name').value.trim();
+    const date = document.getElementById('fest_date').value;
+    if (!name || !date) { showToast('Fill in both fields', true); return; }
+
+    const res = await fetch('/admin/add-fest', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...auth() },
+      body: JSON.stringify({ event_name: name, event_date: date })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      showToast('✅ Fest added!');
+      document.getElementById('fest_name').value = '';
+      document.getElementById('fest_date').value = '';
+      loadAdminData();
+    } else {
+      showToast('❌ ' + data.detail, true);
+    }
+  }
+
+  // ── TEACHER ────────────────────────────────────
+  async function loadTeacherData() {
+    const res = await fetch('/teacher/students', { headers: auth() });
+    if (!res.ok) return;
+    const data = await res.json();
+    const tbody = document.getElementById('students-tbody');
+    if (!data.students.length) {
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted)">No students found</td></tr>';
+      return;
+    }
+    tbody.innerHTML = data.students.map(s => `
+      <tr>
+        <td style="font-family:var(--mono);font-size:12px">${s.username}</td>
+        <td style="font-weight:600">${s.name}</td>
+        <td><span style="background:var(--indigo-bg);color:var(--indigo-dark);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700">${s.career_track}</span></td>
+        <td style="font-family:var(--mono)">${s.attended}</td>
+      </tr>
+    `).join('');
+  }
+
+  async function updateAtt() {
+    const sid = document.getElementById('student_id').value.trim();
+    const cnt = parseInt(document.getElementById('att_count').value);
+    if (!sid || isNaN(cnt)) { showToast('Fill in both fields', true); return; }
+
+    const res = await fetch('/teacher/update-attendance', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', ...auth() },
+      body: JSON.stringify({ student_id: sid, attended_count: cnt })
+    });
+    const data = await res.json();
+    if (res.ok) {
+      showToast('✅ Record updated!');
+      document.getElementById('att-msg').textContent = data.message;
+      loadTeacherData();
+    } else {
+      showToast('❌ ' + data.detail, true);
+    }
+  }
+
+  // ── STUDENT ────────────────────────────────────
+  async function loadStudentData() {
+    const res = await fetch('/student/strategy', { headers: auth() });
+    const data = await res.json();
+    if (!res.ok) { showToast('❌ Could not load strategy', true); return; }
+
+    document.getElementById('student-stats').style.display = 'grid';
+    document.getElementById('st-dates-section').style.display = 'grid';
+
+    document.getElementById('st-track').textContent   = data.track || '—';
+    document.getElementById('st-attended').textContent = data.attended;
+    document.getElementById('st-gap').textContent      = data.gap;
+
+    // Alert
+    const alertEl = document.getElementById('st-alert');
+    const isCritical = data.explanation.includes('CRITICAL');
+    const isGood     = data.explanation.includes('Goal met');
+    alertEl.innerHTML = `
+      <div class="alert ${isCritical ? 'alert-danger' : isGood ? 'alert-success' : 'alert-info'}">
+        <span class="alert-icon">${isCritical ? '⚠️' : isGood ? '✅' : '📋'}</span>
+        <div>${data.explanation}</div>
+      </div>`;
+
+    // Dates
+    const pEl = document.getElementById('p-dates');
+    const gEl = document.getElementById('g-dates');
+
+    pEl.innerHTML = data.p_dates.length
+      ? data.p_dates.map(d => `<span class="tag tag-career">${d}</span>`).join('')
+      : '<span class="tag tag-empty">No priority dates — you\'re on track! 🎉</span>';
+
+    gEl.innerHTML = data.g_dates.length
+      ? data.g_dates.map(d => `<span class="tag tag-buffer">${d}</span>`).join('')
+      : '<span class="tag tag-empty">No buffer dates needed.</span>';
+  }
+
+  async function runCalculator() {
+    const payload = {
+      start_date:       document.getElementById('calc-start').value,
+      end_date:         document.getElementById('calc-end').value,
+      current_attended: parseInt(document.getElementById('calc-attended').value) || 0,
+      target_percentage: parseFloat(document.getElementById('calc-target').value) || 75,
+      career_track:     document.getElementById('calc-track').value,
+      country_code:     'IN'
+    };
+
+    const res = await fetch('/calculate-strategy', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      document.getElementById('calc-result').innerHTML =
+        `<div class="alert alert-danger"><span class="alert-icon">❌</span><div>${data.detail}</div></div>`;
+      return;
+    }
+
+    const m = data.meta_data;
+    const a = data.attendance_math;
+    const p = data.strategic_plan;
+    const isCritical = p.logic_explanation.includes('CRITICAL');
+    const isGood     = p.logic_explanation.includes('Goal met');
+
+    document.getElementById('calc-result').innerHTML = `
+      <div class="alert ${isCritical ? 'alert-danger' : isGood ? 'alert-success' : 'alert-info'}" style="margin-bottom:16px">
+        <span class="alert-icon">${isCritical ? '⚠️' : isGood ? '✅' : '📋'}</span>
+        <div>${p.logic_explanation}</div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px">
+        <div style="background:var(--indigo-bg);border-radius:10px;padding:14px;text-align:center">
+          <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Working Days</div>
+          <div style="font-family:var(--mono);font-size:24px;font-weight:700;color:var(--indigo)">${m.total_working_days}</div>
+        </div>
+        <div style="background:var(--green-bg);border-radius:10px;padding:14px;text-align:center">
+          <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Days Remaining</div>
+          <div style="font-family:var(--mono);font-size:24px;font-weight:700;color:var(--green)">${m.days_remaining}</div>
+        </div>
+        <div style="background:var(--yellow-bg);border-radius:10px;padding:14px;text-align:center">
+          <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Gap to Fill</div>
+          <div style="font-family:var(--mono);font-size:24px;font-weight:700;color:var(--yellow)">${a.gap_to_fill}</div>
+        </div>
+      </div>
+
+      ${p.career_priority_dates.length ? `
+        <div style="margin-bottom:12px">
+          <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px">🎯 Career Priority Dates</div>
+          <div class="tag-grid">${p.career_priority_dates.map(d=>`<span class="tag tag-career">${d}</span>`).join('')}</div>
+        </div>` : ''}
+
+      ${p.buffer_attendance_dates.length ? `
+        <div>
+          <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px">⚡ Buffer Dates</div>
+          <div class="tag-grid">${p.buffer_attendance_dates.map(d=>`<span class="tag tag-buffer">${d}</span>`).join('')}</div>
+        </div>` : ''}
+    `;
+  }
+
+  // ── HELPERS ────────────────────────────────────
+  function auth() {
+    return { 'Authorization': `Bearer ${token}` };
+  }
+
+  function showToast(msg, isError = false) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.background = isError ? 'var(--red)' : 'var(--indigo)';
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+  }
+</script>
 </body>
 </html>

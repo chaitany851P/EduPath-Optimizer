@@ -1,0 +1,1405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Student — EduPath Optimizer</title>
+<style>
+/* ═══════════════════════════════════════════
+   EduPath Optimizer — Shared Dashboard Styles
+   Blue & White Clean Minimal Theme
+═══════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --blue-50:  #eff6ff;
+  --blue-100: #dbeafe;
+  --blue-200: #bfdbfe;
+  --blue-400: #60a5fa;
+  --blue-500: #3b82f6;
+  --blue-600: #2563eb;
+  --blue-700: #1d4ed8;
+  --blue-900: #1e3a8a;
+  --slate-50:  #f8fafc;
+  --slate-100: #f1f5f9;
+  --slate-200: #e2e8f0;
+  --slate-300: #cbd5e1;
+  --slate-400: #94a3b8;
+  --slate-500: #64748b;
+  --slate-600: #475569;
+  --slate-700: #334155;
+  --slate-800: #1e293b;
+  --slate-900: #0f172a;
+  --green-50:  #f0fdf4;
+  --green-100: #dcfce7;
+  --green-500: #22c55e;
+  --green-600: #16a34a;
+  --green-700: #15803d;
+  --amber-50:  #fffbeb;
+  --amber-100: #fef3c7;
+  --amber-500: #f59e0b;
+  --amber-600: #d97706;
+  --amber-700: #b45309;
+  --red-50:  #fef2f2;
+  --red-100: #fee2e2;
+  --red-500: #ef4444;
+  --red-600: #dc2626;
+  --red-700: #b91c1c;
+  --white: #ffffff;
+  --font: 'DM Sans', sans-serif;
+  --mono: 'DM Mono', monospace;
+  --sidebar-w: 220px;
+  --topbar-h: 60px;
+  --radius: 12px;
+  --shadow-sm: 0 1px 2px rgba(15,23,42,0.06);
+  --shadow: 0 1px 3px rgba(15,23,42,0.08), 0 4px 12px rgba(15,23,42,0.05);
+  --shadow-md: 0 4px 16px rgba(15,23,42,0.08);
+}
+
+html, body {
+  height: 100%;
+  font-family: var(--font);
+  background: var(--slate-50);
+  color: var(--slate-900);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* ── Layout Shell ── */
+.shell {
+  display: grid;
+  grid-template-columns: var(--sidebar-w) 1fr;
+  grid-template-rows: auto;
+  min-height: 100vh;
+}
+
+/* ── Sidebar ── */
+.sidebar {
+  background: var(--white);
+  border-right: 1px solid var(--slate-200);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  width: var(--sidebar-w);
+  z-index: 50;
+}
+
+.sidebar-logo {
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid var(--slate-100);
+}
+
+.sidebar-logo .eyebrow {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--blue-500);
+  margin-bottom: 4px;
+}
+
+.sidebar-logo h1 {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--slate-900);
+  line-height: 1.2;
+}
+
+.sidebar-logo h1 span { color: var(--blue-600); }
+
+.sidebar-nav {
+  flex: 1;
+  padding: 12px 10px;
+  overflow-y: auto;
+}
+
+.nav-section {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--slate-400);
+  padding: 10px 10px 4px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--slate-600);
+  font-size: 13.5px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.12s;
+  margin-bottom: 1px;
+}
+
+.nav-item:hover { background: var(--slate-50); color: var(--slate-900); }
+
+.nav-item.active {
+  background: var(--blue-50);
+  color: var(--blue-700);
+  font-weight: 600;
+}
+
+.nav-icon { font-size: 15px; width: 18px; text-align: center; flex-shrink: 0; }
+
+.sidebar-footer {
+  padding: 14px;
+  border-top: 1px solid var(--slate-100);
+}
+
+.user-card {
+  background: var(--slate-50);
+  border: 1px solid var(--slate-200);
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--blue-600);
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.user-info .name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--slate-800);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 110px;
+}
+
+.user-info .role {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--blue-500);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ── Main area ── */
+.main {
+  margin-left: var(--sidebar-w);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Topbar ── */
+.topbar {
+  background: var(--white);
+  border-bottom: 1px solid var(--slate-200);
+  height: var(--topbar-h);
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+.topbar-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--slate-900);
+}
+
+.topbar-sub {
+  font-size: 12px;
+  color: var(--slate-400);
+  margin-top: 1px;
+}
+
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+
+.btn-logout {
+  padding: 7px 14px;
+  border: 1.5px solid var(--slate-200);
+  border-radius: 8px;
+  background: var(--white);
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--slate-500);
+  cursor: pointer;
+  transition: all 0.12s;
+}
+
+.btn-logout:hover { border-color: var(--red-500); color: var(--red-600); }
+
+/* ── Page content ── */
+.page-content {
+  padding: 28px;
+  flex: 1;
+  max-width: 1080px;
+}
+
+/* ── Page heading ── */
+.page-header { margin-bottom: 24px; }
+.page-header h2 { font-size: 22px; font-weight: 700; color: var(--slate-900); }
+.page-header p  { font-size: 13px; color: var(--slate-500); margin-top: 3px; }
+
+/* ── Stat cards ── */
+.stats-grid {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stats-grid-3 { grid-template-columns: repeat(3, 1fr); }
+.stats-grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+.stat-card {
+  background: var(--white);
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  box-shadow: var(--shadow-sm);
+  border-top: 2px solid var(--card-accent, var(--blue-500));
+}
+
+.stat-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--slate-400);
+  margin-bottom: 8px;
+}
+
+.stat-value {
+  font-family: var(--mono);
+  font-size: 28px;
+  font-weight: 500;
+  color: var(--card-accent, var(--blue-600));
+  line-height: 1;
+}
+
+.stat-hint {
+  font-size: 12px;
+  color: var(--slate-400);
+  margin-top: 5px;
+}
+
+/* ── Card ── */
+.card {
+  background: var(--white);
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.card-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--slate-100);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-title { font-size: 14px; font-weight: 700; color: var(--slate-900); }
+.card-sub   { font-size: 12px; color: var(--slate-400); margin-top: 1px; }
+.card-body  { padding: 20px; }
+
+/* ── Form elements ── */
+.form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+.form-grid-full { display: grid; grid-template-columns: 1fr; gap: 14px; }
+
+.field { display: flex; flex-direction: column; gap: 5px; }
+
+.field label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--slate-500);
+}
+
+.field input,
+.field select,
+.field textarea {
+  padding: 9px 12px;
+  border: 1.5px solid var(--slate-200);
+  border-radius: 8px;
+  font-family: var(--font);
+  font-size: 13.5px;
+  color: var(--slate-900);
+  background: var(--slate-50);
+  outline: none;
+  transition: border-color 0.12s, box-shadow 0.12s;
+  -webkit-appearance: none;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  border-color: var(--blue-500);
+  box-shadow: 0 0 0 3px var(--blue-100);
+  background: var(--white);
+}
+
+/* ── Buttons ── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  border-radius: 8px;
+  border: none;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.12s;
+  letter-spacing: 0.1px;
+}
+
+.btn-blue  { background: var(--blue-600); color: var(--white); }
+.btn-blue:hover  { background: var(--blue-700); transform: translateY(-1px); }
+.btn-white { background: var(--white); color: var(--slate-700); border: 1.5px solid var(--slate-200); }
+.btn-white:hover { border-color: var(--slate-300); background: var(--slate-50); }
+.btn-red   { background: var(--red-50); color: var(--red-600); border: 1.5px solid var(--red-100); }
+.btn-red:hover { background: var(--red-100); }
+
+/* ── Alerts ── */
+.alert {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px 16px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  line-height: 1.55;
+  margin-bottom: 20px;
+}
+
+.alert-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+.alert-body strong { display: block; font-weight: 700; font-size: 13px; margin-bottom: 2px; }
+
+.alert-blue   { background: var(--blue-50);  border: 1px solid var(--blue-200);  color: #1e40af; }
+.alert-green  { background: var(--green-50); border: 1px solid var(--green-100); color: var(--green-700); }
+.alert-amber  { background: var(--amber-50); border: 1px solid var(--amber-100); color: var(--amber-700); }
+.alert-red    { background: var(--red-50);   border: 1px solid var(--red-100);   color: var(--red-700); }
+
+/* ── Table ── */
+.table-wrap { overflow-x: auto; }
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--slate-400);
+  text-align: left;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--slate-200);
+  background: var(--slate-50);
+  white-space: nowrap;
+}
+
+.table td {
+  padding: 12px 16px;
+  font-size: 13.5px;
+  border-bottom: 1px solid var(--slate-100);
+  color: var(--slate-700);
+}
+
+.table tr:last-child td { border-bottom: none; }
+.table tbody tr:hover td { background: var(--blue-50); }
+
+/* ── Badges ── */
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+.badge-blue   { background: var(--blue-50);  color: var(--blue-700);  border: 1px solid var(--blue-200); }
+.badge-green  { background: var(--green-50); color: var(--green-700); border: 1px solid var(--green-100); }
+.badge-amber  { background: var(--amber-50); color: var(--amber-700); border: 1px solid var(--amber-100); }
+.badge-red    { background: var(--red-50);   color: var(--red-700);   border: 1px solid var(--red-100); }
+.badge-slate  { background: var(--slate-100); color: var(--slate-600); border: 1px solid var(--slate-200); }
+
+/* ── Date tags ── */
+.tag-grid { display: flex; flex-wrap: wrap; gap: 7px; }
+
+.tag {
+  padding: 4px 11px;
+  border-radius: 20px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: default;
+}
+
+.tag-career { background: var(--blue-50);  color: var(--blue-700);  border: 1px solid var(--blue-200); }
+.tag-buffer { background: var(--amber-50); color: var(--amber-700); border: 1px solid var(--amber-100); }
+
+/* ── Progress ── */
+.progress-bar {
+  height: 5px;
+  background: var(--slate-100);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.8s ease;
+}
+
+/* ── Two col grid ── */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+/* ── Section spacer ── */
+.section-gap { margin-bottom: 20px; }
+
+/* ── Toast ── */
+#toast {
+  position: fixed;
+  bottom: 24px; right: 24px;
+  padding: 11px 18px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--white);
+  background: var(--slate-800);
+  box-shadow: var(--shadow-md);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s, transform 0.2s;
+  transform: translateY(6px);
+  z-index: 999;
+}
+#toast.show { opacity: 1; transform: none; }
+
+/* ── Divider ── */
+.divider { height: 1px; background: var(--slate-100); margin: 20px 0; }
+
+/* ── Empty state ── */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--slate-400);
+  font-size: 13px;
+}
+.empty-state .icon { font-size: 32px; margin-bottom: 8px; }
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .shell { grid-template-columns: 1fr; }
+  .sidebar { transform: translateX(-100%); }
+  .main { margin-left: 0; }
+  .stats-grid-3, .stats-grid-4, .grid-2, .grid-3 { grid-template-columns: 1fr 1fr; }
+  .form-grid-3 { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 600px) {
+  .stats-grid-3, .stats-grid-4, .grid-2, .grid-3,
+  .form-grid-2, .form-grid-3 { grid-template-columns: 1fr; }
+  .page-content { padding: 16px; }
+}
+
+/* ── Topbar height fix ── */
+.topbar { height: 60px !important; min-height: 60px; }
+.topbar > div:first-child { display:flex; flex-direction:column; justify-content:center; line-height:1.3; }
+
+
+/* ── LAYOUT FIX ── */
+.shell {
+  display: flex !important;
+  min-height: 100vh;
+}
+.sidebar {
+  width: 240px;
+  min-width: 240px;
+  flex-shrink: 0;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  overflow-y: auto;
+  z-index: 50;
+}
+.main {
+  margin-left: 240px;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  width: calc(100% - 240px);
+}
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: #fff;
+  border-bottom: 1px solid #e2e8f0;
+  height: 60px;
+  padding: 0 28px;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  flex-direction: row !important;
+  width: 100%;
+  box-sizing: border-box;
+}
+.topbar > div:first-child {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  line-height: 1.3;
+}
+.topbar-title { font-size: 15px; font-weight: 700; }
+.topbar-sub   { font-size: 12px; color: #94a3b8; }
+.topbar-right { display: flex; align-items: center; gap: 10px; }
+.page-content {
+  padding: 28px;
+  flex: 1;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.stats-grid-3 { grid-template-columns: repeat(3, 1fr); }
+.stats-grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- ── Sidebar ── -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="eyebrow">EduPath</div>
+      <h1>Edu<span>Path</span><br>Optimizer</h1>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section">My Plan</div>
+      <a class="nav-item active" onclick="showSection('strategy', this)">
+        <span class="nav-icon">🎯</span> My Strategy
+      </a>
+
+      <div class="nav-section">Exam Prep</div>
+      <a class="nav-item" onclick="showSection('phase2', this)">
+        <span class="nav-icon">📚</span> Exam Readiness
+      </a>
+      <a class="nav-item" onclick="showSection('phase3', this)">
+        <span class="nav-icon">🌉</span> Foundation Check
+      </a>
+
+      <div class="nav-section">Tools</div>
+      <a class="nav-item" onclick="showSection('calculator', this)">
+        <span class="nav-icon">🧮</span> Calculator
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-card">
+        <div class="user-avatar" id="av">S</div>
+        <div class="user-info">
+          <div class="name" id="sb-name">Student</div>
+          <div class="role" style="color:var(--blue-500)">Student</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── Main ── -->
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <div class="topbar-title" id="topbar-title">My Strategy</div>
+        <div class="topbar-sub" id="topbar-sub">Loading your personalized roadmap…</div>
+      </div>
+      <div class="topbar-right">
+        <button class="btn-logout" onclick="logout()">← Logout</button>
+      </div>
+    </div>
+
+    <div class="page-content">
+
+      <!-- ══ STRATEGY ══ -->
+      <div id="sec-strategy" class="section">
+
+        <!-- Stats -->
+        <div class="stats-grid stats-grid-4 section-gap" id="strategy-stats" style="display:none">
+          <div class="stat-card" style="--card-accent:var(--blue-600)">
+            <div class="stat-label">Career Track</div>
+            <div class="stat-value" id="st-track" style="font-size:16px;font-family:var(--font);font-weight:700;line-height:1.3">—</div>
+          </div>
+          <div class="stat-card" style="--card-accent:var(--green-500)">
+            <div class="stat-label">Classes Attended</div>
+            <div class="stat-value" id="st-attended">—</div>
+            <div class="stat-hint">Total recorded</div>
+          </div>
+          <div class="stat-card" style="--card-accent:var(--amber-500)">
+            <div class="stat-label">Gap to Fill</div>
+            <div class="stat-value" id="st-gap">—</div>
+            <div class="stat-hint">More classes needed</div>
+          </div>
+          <div class="stat-card" style="--card-accent:var(--blue-400)">
+            <div class="stat-label">Attendance %</div>
+            <div class="stat-value" id="st-pct">—</div>
+            <div class="stat-hint">Estimated current</div>
+          </div>
+        </div>
+
+        <!-- Alert -->
+        <div id="st-alert"></div>
+
+        <!-- Loading state -->
+        <div id="st-loading" class="card" style="padding:40px;text-align:center;color:var(--slate-400)">
+          <div style="font-size:28px;margin-bottom:8px">⏳</div>
+          Loading your strategy from server…
+        </div>
+
+        <!-- Dates -->
+        <div class="grid-2 section-gap" id="st-dates" style="display:none">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">🎯 Career Priority Dates</div>
+                <div class="card-sub">Non-skippable — aligned to your career track</div>
+              </div>
+              <span class="badge badge-blue" id="p-count">0 dates</span>
+            </div>
+            <div class="card-body">
+              <div class="tag-grid" id="p-dates">
+                <span style="font-size:13px;color:var(--slate-400)">None needed — you're on track! 🎉</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">⚡ Buffer Dates</div>
+                <div class="card-sub">Attend these to meet your 75% threshold</div>
+              </div>
+              <span class="badge badge-amber" id="g-count">0 dates</span>
+            </div>
+            <div class="card-body">
+              <div class="tag-grid" id="g-dates">
+                <span style="font-size:13px;color:var(--slate-400)">No buffer needed.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- What this means -->
+        <div class="card" id="st-explainer" style="display:none">
+          <div class="card-header">
+            <div class="card-title">Understanding Your Plan</div>
+          </div>
+          <div class="card-body">
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
+              <div style="text-align:center;padding:16px;background:var(--blue-50);border-radius:10px">
+                <div style="font-size:22px;margin-bottom:6px">🎯</div>
+                <div style="font-size:12px;font-weight:700;color:var(--blue-700);margin-bottom:4px">Career Priority</div>
+                <div style="font-size:12px;color:var(--slate-500)">Days with subjects matching your career track. Never skip these.</div>
+              </div>
+              <div style="text-align:center;padding:16px;background:var(--amber-50);border-radius:10px">
+                <div style="font-size:22px;margin-bottom:6px">⚡</div>
+                <div style="font-size:12px;font-weight:700;color:var(--amber-700);margin-bottom:4px">Buffer Dates</div>
+                <div style="font-size:12px;color:var(--slate-500)">Mandatory for 75% compliance. Not career-critical but required.</div>
+              </div>
+              <div style="text-align:center;padding:16px;background:var(--green-50);border-radius:10px">
+                <div style="font-size:22px;margin-bottom:6px">✅</div>
+                <div style="font-size:12px;font-weight:700;color:var(--green-700);margin-bottom:4px">75% Target</div>
+                <div style="font-size:12px;color:var(--slate-500)">University minimum. Attend priority + buffer to stay compliant.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ PHASE 2: EXAM READINESS ══ -->
+      <div id="sec-phase2" class="section" style="display:none">
+        <div class="page-header">
+          <h2>Final Exam Readiness 📚</h2>
+          <p>End-Semester Strategy: Identify critical subjects and prioritize your revision</p>
+        </div>
+
+        <!-- Loading -->
+        <div id="p2-loading" class="card" style="padding:40px;text-align:center;color:var(--slate-400)">
+          <div style="font-size:28px;margin-bottom:8px">⏳</div>
+          Loading your exam strategy…
+        </div>
+
+        <!-- Overall Status Alert -->
+        <div id="p2-alert" style="margin-bottom:20px;display:none"></div>
+
+        <!-- Stats -->
+        <div class="stats-grid stats-grid-4 section-gap" id="p2-stats" style="display:none">
+          <div class="stat-card" style="--card-accent:var(--red-600)">
+            <div class="stat-label">🔴 Critical Risk</div>
+            <div class="stat-value" id="p2-critical">—</div>
+            <div class="stat-hint">Immediate focus needed</div>
+          </div>
+          <div class="stat-card" style="--card-accent:var(--amber-500)">
+            <div class="stat-label">🟡 Warning</div>
+            <div class="stat-value" id="p2-warning">—</div>
+            <div class="stat-hint">Requires attention</div>
+          </div>
+          <div class="stat-card" style="--card-accent:var(--green-500)">
+            <div class="stat-label">🟢 Safe</div>
+            <div class="stat-value" id="p2-safe">—</div>
+            <div class="stat-hint">On track</div>
+          </div>
+          <div class="stat-card" style="--card-accent:var(--blue-600)">
+            <div class="stat-label">Subjects Analyzed</div>
+            <div class="stat-value" id="p2-total">—</div>
+            <div class="stat-hint">Total reviewed</div>
+          </div>
+        </div>
+
+        <!-- Prioritized Study List -->
+        <div class="card" id="p2-study-list" style="display:none">
+          <div class="card-header">
+            <div class="card-title">Prioritized Study List</div>
+            <div class="card-sub">Sorted by revision urgency (highest first)</div>
+          </div>
+          <div class="card-body">
+            <div class="table-wrap">
+              <table class="table" id="p2-study-table">
+                <thead>
+                  <tr>
+                    <th>Priority</th>
+                    <th>Subject</th>
+                    <th>Attendance %</th>
+                    <th>Internal Marks</th>
+                    <th>Status</th>
+                    <th>Revision Focus</th>
+                  </tr>
+                </thead>
+                <tbody id="p2-study-body">
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Explanation -->
+        <div class="card" id="p2-explainer" style="display:none;margin-top:20px">
+          <div class="card-header">
+            <div class="card-title">Understanding The "Double Danger Rule"</div>
+          </div>
+          <div class="card-body">
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
+              <div style="padding:16px;background:var(--red-50);border-radius:10px;border-left:4px solid var(--red-600)">
+                <div style="font-size:13px;font-weight:700;color:var(--red-700);margin-bottom:8px">🔴 CRITICAL RISK</div>
+                <div style="font-size:12px;color:var(--slate-600)">Attendance &lt; 75% AND Internal Marks &lt; 50/100</div>
+                <div style="font-size:11px;color:var(--red-600);margin-top:6px;font-weight:600">→ Focus 70% revision time here</div>
+              </div>
+              <div style="padding:16px;background:var(--amber-50);border-radius:10px;border-left:4px solid var(--amber-600)">
+                <div style="font-size:13px;font-weight:700;color:var(--amber-700);margin-bottom:8px">🟡 WARNING</div>
+                <div style="font-size:12px;color:var(--slate-600)">Either low attendance OR low marks (but not both)</div>
+                <div style="font-size:11px;color:var(--amber-600);margin-top:6px;font-weight:600">→ Targeted preparation needed</div>
+              </div>
+              <div style="padding:16px;background:var(--green-50);border-radius:10px;border-left:4px solid var(--green-600)">
+                <div style="font-size:13px;font-weight:700;color:var(--green-700);margin-bottom:8px">🟢 SAFE</div>
+                <div style="font-size:12px;color:var(--slate-600)">Strong attendance AND internal marks</div>
+                <div style="font-size:11px;color:var(--green-600);margin-top:6px;font-weight:600">→ Regular revision sufficient</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══ PHASE 3: NEW SEMESTER FOUNDATION CHECK ══ -->
+      <div id="sec-phase3" class="section" style="display:none">
+        <div class="page-header">
+          <h2>New Semester Foundation Check 🌉</h2>
+          <p>Identify gaps from your prerequisite subjects and plan your refresher</p>
+        </div>
+
+        <!-- Loading -->
+        <div id="p3-loading" class="card" style="padding:40px;text-align:center;color:var(--slate-400)">
+          <div style="font-size:28px;margin-bottom:8px">⏳</div>
+          Analyzing your prerequisite performance…
+        </div>
+
+        <!-- Foundation Alerts -->
+        <div id="p3-alerts" style="margin-bottom:20px;display:none"></div>
+
+        <!-- No gaps message -->
+        <div id="p3-no-gaps" class="alert alert-green" style="display:none">
+          <span class="alert-icon">✓</span>
+          <div class="alert-body">
+            <strong>Great news!</strong> No significant prerequisite gaps detected. You have a strong foundation for upcoming subjects.
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid stats-grid-4 section-gap" id="p3-stats" style="display:none">
+          <div class="stat-card" style="--card-accent:var(--blue-600)">
+            <div class="stat-label">Total Gaps Found</div>
+            <div class="stat-value" id="p3-gap-count">—</div>
+            <div class="stat-hint">Prerequisite concerns</div>
+          </div>
+          <div class="stat-card" style="--card-accent:var(--red-600)">
+            <div class="stat-label">CRITICAL</div>
+            <div class="stat-value" id="p3-crit-count">—</div>
+            <div class="stat-hint">Marks &lt; 40%</div>
+          </div>
+          <div class="stat-card" style="--card-accent:var(--amber-600)">
+            <div class="stat-label">HIGH</div>
+            <div class="stat-value" id="p3-high-count">—</div>
+            <div class="stat-hint">Marks 40-50%</div>
+          </div>
+          <div class="stat-card" style="--card-accent:var(--slate-600)">
+            <div class="stat-label">Current Semester</div>
+            <div class="stat-value" id="p3-semester">—</div>
+            <div class="stat-hint">Active semester</div>
+          </div>
+        </div>
+
+        <!-- Prerequisites with gaps -->
+        <div class="grid-2 section-gap" id="p3-gaps-container" style="display:none"></div>
+
+        <!-- Refresher Plans -->
+        <div class="card" id="p3-refresher-header" style="display:none;margin-top:20px">
+          <div class="card-header">
+            <div class="card-title">Your 5-Day Refresher Plans</div>
+            <div class="card-sub">Start in the first week of each semester</div>
+          </div>
+          <div class="card-body" id="p3-refresher-list">
+          </div>
+        </div>
+
+        <!-- Recommendations -->
+        <div class="card" id="p3-recommendations" style="display:none;margin-top:20px">
+          <div class="card-header">
+            <div class="card-title">Recommended Actions</div>
+          </div>
+          <div class="card-body" id="p3-recommendations-list">
+          </div>
+        </div>
+      </div>
+
+        </div>
+        <div class="page-header">
+          <h2>Strategy Calculator</h2>
+          <p>Run a custom attendance strategy for any date range or target</p>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Input Parameters</div>
+            </div>
+            <div class="card-body">
+              <div class="form-grid-2" style="gap:14px;margin-bottom:14px">
+                <div class="field">
+                  <label>Start Date</label>
+                  <input type="date" id="c-start" value="2026-01-01"/>
+                </div>
+                <div class="field">
+                  <label>End Date</label>
+                  <input type="date" id="c-end" value="2026-05-30"/>
+                </div>
+              </div>
+              <div class="form-grid-2" style="gap:14px;margin-bottom:14px">
+                <div class="field">
+                  <label>Classes Attended</label>
+                  <input type="number" id="c-attended" placeholder="e.g. 45" min="0"/>
+                </div>
+                <div class="field">
+                  <label>Target %</label>
+                  <input type="number" id="c-target" value="75" min="0" max="100"/>
+                </div>
+              </div>
+              <div class="field" style="margin-bottom:18px">
+                <label>Career Track</label>
+                <select id="c-track">
+                  <option>Data Science</option>
+                  <option>Cyber Security</option>
+                  <option>IOT</option>
+                  <option>Computer Graphics</option>
+                </select>
+              </div>
+              <button class="btn btn-blue" onclick="runCalculator()">Calculate Strategy →</button>
+            </div>
+          </div>
+
+          <div id="calc-result-panel">
+            <div class="card" style="height:100%">
+              <div class="card-header">
+                <div class="card-title">Result</div>
+              </div>
+              <div class="card-body" id="calc-result">
+                <div class="empty-state">
+                  <div class="icon">🧮</div>
+                  Fill in the parameters and hit Calculate
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sample payloads for reference -->
+        <div class="card" style="margin-top:20px">
+          <div class="card-header">
+            <div class="card-title">Sample Scenarios</div>
+            <div class="card-sub">Click to load</div>
+          </div>
+          <div class="card-body">
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+              <div onclick="loadSample(0)" style="padding:12px;background:var(--slate-50);border:1px solid var(--slate-200);border-radius:8px;cursor:pointer;transition:border-color 0.1s" onmouseover="this.style.borderColor='var(--blue-300)'" onmouseout="this.style.borderColor='var(--slate-200)'">
+                <div style="font-size:12px;font-weight:700;margin-bottom:4px">Normal Case</div>
+                <div style="font-size:11px;color:var(--slate-500)">March, 5 attended, 75% target, Data Science</div>
+              </div>
+              <div onclick="loadSample(1)" style="padding:12px;background:var(--slate-50);border:1px solid var(--slate-200);border-radius:8px;cursor:pointer;transition:border-color 0.1s" onmouseover="this.style.borderColor='var(--blue-300)'" onmouseout="this.style.borderColor='var(--slate-200)'">
+                <div style="font-size:12px;font-weight:700;margin-bottom:4px">Impossible Case</div>
+                <div style="font-size:11px;color:var(--slate-500)">1 week, 0 attended, 90% — triggers counselor warning</div>
+              </div>
+              <div onclick="loadSample(2)" style="padding:12px;background:var(--slate-50);border:1px solid var(--slate-200);border-radius:8px;cursor:pointer;transition:border-color 0.1s" onmouseover="this.style.borderColor='var(--blue-300)'" onmouseout="this.style.borderColor='var(--slate-200)'">
+                <div style="font-size:12px;font-weight:700;margin-bottom:4px">Goal Met</div>
+                <div style="font-size:11px;color:var(--slate-500)">Full semester, 80 attended — already above target</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+  const token = sessionStorage.getItem('token');
+  const role  = sessionStorage.getItem('role');
+  const name  = sessionStorage.getItem('name') || 'Student';
+  if (!token || role !== 'student') window.location.href = '/';
+
+  document.getElementById('sb-name').textContent = name;
+  document.getElementById('av').textContent = name[0].toUpperCase();
+
+  function auth() { return { 'Authorization': `Bearer ${token}` }; }
+  function logout() { sessionStorage.clear(); window.location.href = '/'; }
+
+  const sections = ['strategy','phase2','phase3','calculator'];
+  const titles   = { strategy:'My Strategy', phase2:'Final Exam Readiness', phase3:'New Semester Foundation Check', calculator:'Calculator' };
+
+  function showSection(id, el) {
+    sections.forEach(s => document.getElementById('sec-'+s).style.display = s===id?'block':'none');
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    if (el) el.classList.add('active');
+    document.getElementById('topbar-title').textContent = titles[id];
+    
+    // Load data for specific sections
+    if (id === 'phase2') loadExamStrategy();
+    if (id === 'phase3') loadBridgeReport();
+  }
+
+  // ── Load student strategy ──
+  async function loadStrategy() {
+    const res = await fetch('/student/strategy', { headers: auth() });
+    const data = await res.json();
+
+    document.getElementById('st-loading').style.display = 'none';
+
+    if (!res.ok) {
+      document.getElementById('st-alert').innerHTML = `
+        <div class="alert alert-red">
+          <span class="alert-icon">❌</span>
+          <div class="alert-body"><strong>Error</strong>${data.detail || 'Could not load strategy'}</div>
+        </div>`;
+      return;
+    }
+
+    // Stats
+    document.getElementById('strategy-stats').style.display = 'grid';
+    document.getElementById('st-track').textContent    = data.track || '—';
+    document.getElementById('st-attended').textContent = data.attended;
+    document.getElementById('st-gap').textContent      = data.gap;
+
+    // Rough % estimate: semester ~100 classes
+    const pct = Math.min(100, Math.round((data.attended / 100) * 100));
+    document.getElementById('st-pct').textContent = pct + '%';
+
+    document.getElementById('topbar-sub').textContent =
+      `${data.name} — ${data.track} Track`;
+
+    // Alert
+    const alertEl = document.getElementById('st-alert');
+    const isCrit  = data.explanation.includes('CRITICAL');
+    const isGood  = data.explanation.includes('Goal met') || data.explanation.includes('above');
+    alertEl.innerHTML = `
+      <div class="alert ${isCrit ? 'alert-red' : isGood ? 'alert-green' : 'alert-blue'}">
+        <span class="alert-icon">${isCrit ? '⚠️' : isGood ? '✅' : '📋'}</span>
+        <div class="alert-body">${data.explanation}</div>
+      </div>`;
+
+    if (isCrit) {
+      alertEl.innerHTML += `
+        <div class="alert alert-amber" style="margin-top:-12px">
+          <span class="alert-icon">🏫</span>
+          <div class="alert-body">
+            <strong>Action Required</strong>
+            Please visit your academic counselor with this report to plan next steps.
+          </div>
+        </div>`;
+    }
+
+    // Date tags
+    document.getElementById('st-dates').style.display = 'grid';
+    document.getElementById('st-explainer').style.display = 'block';
+
+    const pEl = document.getElementById('p-dates');
+    const gEl = document.getElementById('g-dates');
+    document.getElementById('p-count').textContent = `${data.p_dates.length} dates`;
+    document.getElementById('g-count').textContent = `${data.g_dates.length} dates`;
+
+    pEl.innerHTML = data.p_dates.length
+      ? data.p_dates.map(d => `<span class="tag tag-career">${d}</span>`).join('')
+      : '<span style="font-size:13px;color:var(--slate-400)">None needed — you\'re on track! 🎉</span>';
+
+    gEl.innerHTML = data.g_dates.length
+      ? data.g_dates.map(d => `<span class="tag tag-buffer">${d}</span>`).join('')
+      : '<span style="font-size:13px;color:var(--slate-400)">No buffer dates needed.</span>';
+  }
+
+  // ── Calculator ──
+  const samples = [
+    { start:'2026-03-01', end:'2026-03-31', attended:5,  target:75, track:'Data Science' },
+    { start:'2026-03-18', end:'2026-03-20', attended:0,  target:90, track:'Data Science' },
+    { start:'2026-01-01', end:'2026-05-30', attended:80, target:75, track:'Cyber Security' },
+  ];
+
+  function loadSample(i) {
+    const s = samples[i];
+    document.getElementById('c-start').value    = s.start;
+    document.getElementById('c-end').value      = s.end;
+    document.getElementById('c-attended').value = s.attended;
+    document.getElementById('c-target').value   = s.target;
+    document.getElementById('c-track').value    = s.track;
+    showToast(`Loaded: ${['Normal','Impossible','Goal Met'][i]} case`);
+  }
+
+  async function runCalculator() {
+    const payload = {
+      start_date:        document.getElementById('c-start').value,
+      end_date:          document.getElementById('c-end').value,
+      current_attended:  parseInt(document.getElementById('c-attended').value) || 0,
+      target_percentage: parseFloat(document.getElementById('c-target').value) || 75,
+      career_track:      document.getElementById('c-track').value,
+      country_code:      'IN'
+    };
+
+    const resultEl = document.getElementById('calc-result');
+    resultEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--slate-400)">Calculating…</div>';
+
+    const res  = await fetch('/calculate-strategy', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      resultEl.innerHTML = `
+        <div class="alert alert-red">
+          <span class="alert-icon">❌</span>
+          <div class="alert-body"><strong>Error</strong>${data.detail}</div>
+        </div>`;
+      return;
+    }
+
+    const m   = data.meta_data;
+    const a   = data.attendance_math;
+    const p   = data.strategic_plan;
+    const isCrit = p.logic_explanation.includes('CRITICAL');
+    const isGood = p.logic_explanation.includes('Goal met');
+
+    resultEl.innerHTML = `
+      <div class="alert ${isCrit?'alert-red':isGood?'alert-green':'alert-blue'}" style="margin-bottom:16px">
+        <span class="alert-icon">${isCrit?'⚠️':isGood?'✅':'📋'}</span>
+        <div class="alert-body">${p.logic_explanation}</div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px">
+        <div style="background:var(--blue-50);border-radius:8px;padding:12px;text-align:center">
+          <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--slate-400);margin-bottom:4px">Working Days</div>
+          <div style="font-family:var(--mono);font-size:22px;font-weight:500;color:var(--blue-600)">${m.total_working_days}</div>
+        </div>
+        <div style="background:var(--green-50);border-radius:8px;padding:12px;text-align:center">
+          <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--slate-400);margin-bottom:4px">Days Left</div>
+          <div style="font-family:var(--mono);font-size:22px;font-weight:500;color:var(--green-600)">${m.days_remaining}</div>
+        </div>
+        <div style="background:var(--amber-50);border-radius:8px;padding:12px;text-align:center">
+          <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--slate-400);margin-bottom:4px">Gap</div>
+          <div style="font-family:var(--mono);font-size:22px;font-weight:500;color:var(--amber-600)">${a.gap_to_fill}</div>
+        </div>
+      </div>
+
+      ${p.career_priority_dates.length ? `
+        <div style="margin-bottom:12px">
+          <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--slate-400);margin-bottom:8px">🎯 Career Priority</div>
+          <div class="tag-grid">${p.career_priority_dates.map(d=>`<span class="tag tag-career">${d}</span>`).join('')}</div>
+        </div>` : ''}
+
+      ${p.buffer_attendance_dates.length ? `
+        <div>
+          <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--slate-400);margin-bottom:8px">⚡ Buffer Dates</div>
+          <div class="tag-grid">${p.buffer_attendance_dates.map(d=>`<span class="tag tag-buffer">${d}</span>`).join('')}</div>
+        </div>` : ''}
+
+      ${!p.career_priority_dates.length && !p.buffer_attendance_dates.length
+        ? '<div style="text-align:center;color:var(--green-600);font-weight:600;padding:12px">🎉 No action needed — target already met!</div>' : ''}
+    `;
+  }
+
+  function showToast(msg, isErr = false) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.background = isErr ? 'var(--red-600)' : 'var(--slate-800)';
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+  }
+
+  // ── PHASE 2: Exam Strategy ──
+  async function loadExamStrategy() {
+    const resEl = document.getElementById('p2-loading');
+    const alertEl = document.getElementById( 'p2-alert');
+    const statsEl = document.getElementById('p2-stats');
+    const studyEl = document.getElementById('p2-study-list');
+    const explainEl = document.getElementById('p2-explainer');
+
+    try {
+      // Get student ID from session or fetch from API
+      const studentId = sessionStorage.getItem('student_id') || 'current';
+      const res = await fetch(`/api/phase-2-3/exam-strategy/${studentId}`, { headers: auth() });
+      
+      if (!res.ok) {
+        const err = await res.json();
+        resEl.innerHTML = `<div class="alert alert-red">
+          <span class="alert-icon">❌</span>
+          <div class="alert-body"><strong>Error loading exam strategy:</strong> ${err.detail || 'Server error'}</div>
+        </div>`;
+        resEl.style.display = 'block';
+        return;
+      }
+
+      const data = await res.json();
+      resEl.style.display = 'none';
+      statsEl.style.display = 'grid';
+      studyEl.style.display = 'block';
+      explainEl.style.display = 'block';
+
+      // Update stats
+      document.getElementById('p2-critical').textContent = data.critical_risk_count;
+      document.getElementById('p2-warning').textContent = data.warning_count;
+      document.getElementById('p2-safe').textContent = data.safe_count;
+      document.getElementById('p2-total').textContent = data.total_risk_subjects;
+
+      // Overall status alert
+      const isCritical = data.critical_risk_count > 0;
+      const isWarning = data.warning_count > 0;
+      alertEl.innerHTML = `
+        <div class="alert ${isCritical ? 'alert-red' : isWarning ? 'alert-amber' : 'alert-green'}">
+          <span class="alert-icon">${isCritical ? '🚨' : isWarning ? '⚠️' : '✅'}</span>
+          <div class="alert-body"><strong>${data.overall_status}</strong></div>
+        </div>`;
+      alertEl.style.display = 'block';
+
+      // Build study table
+      const tbody = document.getElementById('p2-study-body');
+      tbody.innerHTML = '';
+      
+      data.prioritized_study_list.forEach((subject, idx) => {
+        const riskColor = subject.risk_level === 'CRITICAL_RISK' ? '#ef4444' : 
+                         subject.risk_level === 'WARNING' ? '#f59e0b' : '#22c55e';
+        const riskDot = subject.risk_level === 'CRITICAL_RISK' ? '🔴' : 
+                       subject.risk_level === 'WARNING' ? '🟡' : '🟢';
+        
+        tbody.innerHTML += `
+          <tr>
+            <td style="font-weight:600;color:#2563eb">#${idx + 1}</td>
+            <td style="font-weight:600">${subject.subject_name}</td>
+            <td>${subject.attendance_percentage.toFixed(1)}%</td>
+            <td>${subject.total_internal.toFixed(1)}/50</td>
+            <td><span style="display:inline-block;padding:3px 10px;border-radius:20px;background:${riskColor}15;color:${riskColor};font-weight:600;font-size:12px">${riskDot} ${subject.risk_level}</span></td>
+            <td style="font-size:12px;color:#475569">${subject.revision_focus}</td>
+          </tr>
+        `;
+      });
+
+      // Add a detailed info row with messages
+      if (data.prioritized_study_list.length > 0) {
+        const detailsDiv = document.createElement('div');
+        detailsDiv.style.cssText = 'margin-top:20px;display:grid;gap:12px';
+        detailsDiv.innerHTML = data.prioritized_study_list.map(s => `
+          <div style="padding:12px;background:${s.risk_level === 'CRITICAL_RISK' ? '#fee2e2' : s.risk_level === 'WARNING' ? '#fef3c7' : '#f0fdf4'};border-left:4px solid ${s.risk_level === 'CRITICAL_RISK' ? '#ef4444' : s.risk_level === 'WARNING' ? '#f59e0b' : '#22c55e'};border-radius:8px">
+            <div style="font-weight:700;margin-bottom:4px">${s.subject_name}</div>
+            <div style="font-size:12px;color:#475569">${s.message}</div>
+          </div>
+        `).join('');
+        document.getElementById('p2-study-list').appendChild(detailsDiv);
+      }
+    } catch (e) {
+      resEl.innerHTML = `<div class="alert alert-red">
+        <span class="alert-icon">❌</span>
+        <div class="alert-body"><strong>Error:</strong> ${e.message}</div>
+      </div>`;
+      resEl.style.display = 'block';
+    }
+  }
+
+  // ── PHASE 3: Bridge Report ──
+  async function loadBridgeReport() {
+    const resEl = document.getElementById('p3-loading');
+    const statsEl = document.getElementById('p3-stats');
+    const gapsEl = document.getElementById('p3-gaps-container');
+    const alertsEl = document.getElementById('p3-alerts');
+    const noGapsEl = document.getElementById('p3-no-gaps');
+    const refresherEl = document.getElementById('p3-refresher-header');
+    const rocsEl = document.getElementById('p3-recommendations');
+
+    try {
+      const studentId = sessionStorage.getItem('student_id') || 'current';
+      const res = await fetch(`/api/phase-2-3/bridge-report/${studentId}`, { headers: auth() });
+      
+      if (!res.ok) {
+        const err = await res.json();
+        resEl.innerHTML = `<div class="alert alert-red">
+          <span class="alert-icon">❌</span>
+          <div class="alert-body"><strong>Error loading bridge report:</strong> ${err.detail || 'Server error'}</div>
+        </div>`;
+        resEl.style.display = 'block';
+        return;
+      }
+
+      const data = await res.json();
+      resEl.style.display = 'none';
+
+      // Update semester
+      document.getElementById('p3-semester').textContent = `Semester ${data.semester}`;
+
+      if (!data.has_gaps) {
+        noGapsEl.style.display = 'block';
+        return;
+      }
+
+      // Show stats and sections
+      statsEl.style.display = 'grid';
+      document.getElementById('p3-gap-count').textContent = data.gap_count;
+      
+      // Count by severity
+      const critCount = data.prerequisites_failed.filter(g => g.gap_severity === 'CRITICAL').length;
+      const highCount = data.prerequisites_failed.filter(g => g.gap_severity === 'HIGH').length;
+      document.getElementById('p3-crit-count').textContent = critCount;
+      document.getElementById('p3-high-count').textContent = highCount;
+
+      // Gap alerts at top
+      alertsEl.innerHTML = data.prerequisites_failed.map(gap => `
+        <div class="alert alert-amber" style="margin-bottom:12px">
+          <span class="alert-icon">⚠️</span>
+          <div class="alert-body">
+            <strong>Foundation Alert:</strong> ${gap.foundation_warning}
+          </div>
+        </div>
+      `).join('');
+      alertsEl.style.display = 'block';
+
+      // Gap cards
+      gapsEl.innerHTML = data.prerequisites_failed.map(gap => `
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">${gap.prerequisite_subject} → ${gap.current_subject}</div>
+              <div class="card-sub">Grade: <strong>${gap.prerequisite_grade}</strong> | Marks: ${gap.prerequisite_marks}/50</div>
+            </div>
+            <span class="badge ${gap.gap_severity === 'CRITICAL' ? 'badge-red' : gap.gap_severity === 'HIGH' ? 'badge-amber' : 'badge-slate'}">${gap.gap_severity}</span>
+          </div>
+          <div class="card-body">
+            <div style="font-size:13px;color:#475569;margin-bottom:12px">${gap.foundation_warning}</div>
+            <div style="padding:12px;background:#ennf6ff;border-left:3px solid #3b82f6;border-radius:4px">
+              <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:#1e40af;margin-bottom:8px">📋 5-Day Refresher Plan</div>
+              <ol style="font-size:12px;color:#1e3a8a;padding-left:18px;line-height:1.8">
+                ${gap.refresher_plan.map(day => `<li>${day}</li>`).join('')}
+              </ol>
+            </div>
+          </div>
+        </div>
+      `).join('');
+      gapsEl.style.display = 'grid';
+
+      // Refresher menu
+      refresherEl.style.display = 'block';
+      const refreshersList = document.getElementById('p3-refresher-list');
+      refreshersList.innerHTML = `
+        <div style="font-size:13px;color:#475569;line-height:1.8">
+          <p style="margin-bottom:12px"><strong>Start immediately when the semester begins. Here's your action plan:</strong></p>
+          <ul style="margin-left:20px;line-height:2">
+            <li>📅 <strong>Week 1:</strong> Allocate 5-10 hours to refresh weak prerequisites</li>
+            <li>📚 <strong>Parallel prep:</strong> Continue with current semester coursework</li>
+            <li>🧠 <strong>Focus areas:</strong> Concepts marked as CRITICAL or HIGH severity</li>
+            <li>✓ <strong>Goal:</strong> Build confidence before mid-term exams</li>
+          </ul>
+        </div>
+      `;
+
+      // Recommendations
+      rocsEl.style.display = 'block';
+      const rocsList = document.getElementById('p3-recommendations-list');
+      rocsList.innerHTML = `
+        <ol style="font-size:13px;color:#475569;line-height:2;margin-left:20px">
+          ${data.next_semester_recommendations.map(rec => `<li>${rec}</li>`).join('')}
+        </ol>
+      `;
+    } catch (e) {
+      resEl.innerHTML = `<div class="alert alert-red">
+        <span class="alert-icon">❌</span>
+        <div class="alert-body"><strong>Error:</strong> ${e.message}</div>
+      </div>`;
+      resEl.style.display = 'block';
+    }
+  }
+
+  loadStrategy();
+</script>
+</body>
+</html>
