@@ -1,5 +1,21 @@
 version: '3.8'
 
+# ═════════════════════════════════════════════════════════════════════════
+# EduPath Optimizer - Docker Compose Configuration
+# 
+# ✅ FULLY COMPATIBLE WITH PODMAN!
+# 
+# Usage with Docker:
+#   docker-compose up -d
+#
+# Usage with Podman:
+#   podman-compose up -d
+#   (No changes needed - commands are identical!)
+#
+# For full Podman guide, see: PODMAN_DEPLOYMENT_GUIDE.md
+# For migration from Docker to Podman: DOCKER_TO_PODMAN_MIGRATION.md
+# ═════════════════════════════════════════════════════════════════════════
+
 services:
   # ═════════════════════════════════════════════════════════════
   # EduPath Optimizer WebAPI
