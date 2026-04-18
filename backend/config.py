@@ -43,6 +43,8 @@ class Environment(BaseSettings):
     # ─────────────────────────────────────────────────────────────
     # DATABASE SETTINGS
     # ─────────────────────────────────────────────────────────────
+    MONGO_URI: Optional[str] = Field(default=None, description="Legacy MongoDB URI")
+    DB_NAME: Optional[str] = Field(default=None, description="Legacy DB Name")
     MONGODB_URI: str = Field(
         default="mongodb+srv://user:password@cluster.mongodb.net",
         description="MongoDB connection URI"

@@ -1,9 +1,13 @@
 from motor.motor_asyncio import AsyncIOMotorClient
 from pymongo.errors import ConnectionFailure
 import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017")
-DB_NAME = os.getenv("DB_NAME", "edupath_optimizer")
+DB_NAME = os.getenv("DB_NAME", "edupath_db")
 
 client: AsyncIOMotorClient = None
 db = None

@@ -280,14 +280,14 @@ def check_jwt_token_generation():
     """Test: /token endpoint generates valid JWT"""
     try:
         payload = {
-            "username": "test_user",
-            "password": "test_password",
+            "username": "2024001",
+            "password": "student123",
             "role": "student"
         }
         
         response = requests.post(
-            f"{API_BASE}/token",
-            json=payload,
+            f"{API_BASE}/api/auth/token",
+            data=payload,
             timeout=5
         )
         
@@ -343,7 +343,7 @@ def check_teacher_attendance_access():
     try:
         # Check if teacher endpoint exists
         response = requests.get(
-            f"{API_BASE}/api/teachers/subjects",
+            f"{API_BASE}/api/teachers/students",
             timeout=5
         )
         

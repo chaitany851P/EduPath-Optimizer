@@ -1,5 +1,6 @@
-from fastapi import APIRouter, HTTPException, UploadFile, File
+from fastapi import APIRouter, HTTPException, UploadFile, File, Depends
 from models import SubjectCreate, AttendanceBulkUpdate, AcademicPerformance
+from pydantic import BaseModel, Field
 from database import get_db
 from datetime import date, datetime
 import csv
@@ -8,10 +9,38 @@ import io
 router = APIRouter()
 
 
+class AttendanceUpdate(BaseModel):
+    student_id: str
+    attended_count: int = Field(..., ge=0)
+
+
 def _serialize(doc):
     if doc and "_id" in doc:
         doc["id"] = str(doc.pop("_id"))
     return doc
+
+
+@router.get("/students")
+async def list_students_teacher():
+    """List all students for teacher dashboard"""
+    db = get_db()
+    students = []
+    async for u in db.users.find({"role": "student"}, {"_id": 0, "password_hash": 0}):
+        students.append(u)
+    return {"students": students}
+
+
+@router.post("/update-attendance")
+async def update_attendance_single(data: AttendanceUpdate):
+    """Update attendance for a single student (Legacy support)"""
+    db = get_db()
+    result = await db.users.update_one(
+        {"username": data.student_id},
+        {"$set": {"attended": data.attended_count}}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Student not found")
+    return {"message": f"Attendance updated for {data.student_id}"}
 
 
 @router.post("/subjects/", status_code=201)

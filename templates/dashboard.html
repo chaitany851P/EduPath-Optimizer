@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduPath Optimizer - Student Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #1e40af;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg: #f3f4f6;
+            --surface: #ffffff;
+            --text: #111827;
+            --text-light: #6b7280;
+            --border: #e5e7eb;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* ─── Header ─── */
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, #2563eb 100%);
+            color: white;
+            padding: 2rem 1rem;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+            margin-bottom: 2rem;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header-subtitle {
+            opacity: 0.9;
+            font-size: 1.05rem;
+        }
+
+        /* ─── Container & Layout ─── */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        /* ─── Cards ─── */
+        .card {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border);
+            transition: box-shadow 0.3s, transform 0.3s;
+        }
+
+        .card:hover {
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .card h2 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* ─── Student Info Card ─── */
+        .student-info {
+            grid-column: 1 / -1;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .info-item {
+            padding: 1rem;
+            background: var(--bg);
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .info-label {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .info-value {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-top: 0.25rem;
+            color: var(--text);
+        }
+
+        /* ─── Risk Badge ─── */
+        .risk-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .risk-critical {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .risk-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .risk-safe {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        /* ─── Subject Card ─── */
+        .subject-card {
+            border-left: 4px solid var(--primary);
+        }
+
+        .subject-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .subject-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .subject-code {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        /* ─── Metrics ─── */
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .metric:last-child {
+            border-bottom: none;
+        }
+
+        .metric-label {
+            color: var(--text-light);
+            font-size: 0.95rem;
+        }
+
+        .metric-value {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        /* ─── Progress Bar ─── */
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), #60a5fa);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        /* ─── Status Indicator ─── */
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        /* ─── Full Width Sections ─── */
+        .section {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border);
+        }
+
+        .section h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        /* ─── Subject Grid ─── */
+        .subjects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .subject-item {
+            background: var(--bg);
+            border-radius: 10px;
+            padding: 1.5rem;
+            border-left: 4px solid;
+            transition: all 0.3s;
+        }
+
+        .subject-item.critical {
+            border-left-color: var(--danger);
+            background: rgba(239, 68, 68, 0.05);
+        }
+
+        .subject-item.warning {
+            border-left-color: var(--warning);
+            background: rgba(245, 158, 11, 0.05);
+        }
+
+        .subject-item.safe {
+            border-left-color: var(--success);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        /* ─── Gap Card ─── */
+        .gap-card {
+            background: var(--bg);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--danger);
+        }
+
+        .gap-title {
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+
+        .gap-description {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+
+        .gap-severity {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .severity-critical {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .severity-high {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        /* ─── Refresher Plan ─── */
+        .refresher-plan {
+            background: var(--surface);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        .plan-title {
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--text);
+        }
+
+        .plan-day {
+            padding: 0.5rem 0;
+            font-size: 0.95rem;
+            color: var(--text-light);
+        }
+
+        /* ─── Button ─── */
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--border);
+            color: var(--text);
+        }
+
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+
+        /* ─── Loading & Empty ─── */
+        .loading, .empty {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-light);
+        }
+
+        .loading {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        /* ─── Tabs ─── */
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+
+        .tab {
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-light);
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* ─── Footer ─── */
+        footer {
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            padding: 2rem 1rem;
+            text-align: center;
+            color: var(--text-light);
+            margin-top: 3rem;
+        }
+
+        /* ─── Responsive ─── */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .section {
+                padding: 1rem;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .info-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-content">
+            <h1>🎓 EduPath Optimizer</h1>
+            <p class="header-subtitle">Your Personalized Academic Success Guide</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Loading State -->
+        <div id="loading" class="loading">
+            <p>Loading your academic profile...</p>
+        </div>
+
+        <!-- Main Dashboard -->
+        <div id="dashboard" style="display: none;">
+            <!-- Student Info -->
+            <div class="section student-info">
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Student Name</div>
+                        <div class="info-value" id="studentName">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Student ID</div>
+                        <div class="info-value" id="studentId">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Department</div>
+                        <div class="info-value" id="studentDept">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Current Semester</div>
+                        <div class="info-value" id="studentSem">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="section">
+                <div class="tabs">
+                    <button class="tab active" onclick="switchTab('phase2')">📊 Exam Strategy</button>
+                    <button class="tab" onclick="switchTab('phase3')">🌉 Foundation Check</button>
+                </div>
+
+                <!-- Phase 2: Exam Strategy -->
+                <div id="phase2" class="tab-content active">
+                    <div style="margin-bottom: 1.5rem;">
+                        <h3 style="margin-bottom: 0.5rem;">Overall Status</h3>
+                        <div id="overallStatus" class="status-indicator" style="font-size: 1.1rem; padding: 1rem;">
+                            <span class="status-dot" style="background: var(--warning);"></span>
+                            Loading...
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 1.5rem;">
+                        <p style="color: var(--text-light); margin-bottom: 1rem;">
+                            Based on your attendance and internal marks, here's what you need to focus on:
+                        </p>
+                    </div>
+
+                    <div id="subjectsContainer" class="subjects-grid"></div>
+                </div>
+
+                <!-- Phase 3: Foundation Check -->
+                <div id="phase3" class="tab-content">
+                    <div style="margin-bottom: 1.5rem;">
+                        <p style="color: var(--text-light); margin-bottom: 1rem;">
+                            We've analyzed your foundation in prerequisite subjects and identified potential gaps.
+                        </p>
+                    </div>
+
+                    <div id="gapsContainer"></div>
+                    <div id="noGapsMessage" class="empty" style="display: none;">
+                        ✓ Great! You have a strong foundation. No gaps detected.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error State -->
+        <div id="error" class="empty" style="display: none; color: var(--danger);">
+            <p>⚠️ Unable to load your data. Please try again.</p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>🚀 EduPath Optimizer v2.0.0 | Your path to academic excellence</p>
+    </footer>
+
+    <script>
+        // Get student ID from URL parameter or sessionStorage
+        let STUDENT_ID = new URLSearchParams(window.location.search).get('student_id') || 
+                         (sessionStorage.getItem('user') ? JSON.parse(sessionStorage.getItem('user')).user_id : '2024001');
+        let currentTab = 'phase2';
+
+        async function loadDashboard() {
+            try {
+                const response = await fetch(`/api/phase-2-3/exam-strategy/${STUDENT_ID}`);
+                if (!response.ok) throw new Error('Failed to load exam strategy');
+                
+                const data = await response.json();
+                renderDashboard(data);
+                
+                // Load Phase 3 data
+                const bridgeResponse = await fetch(`/api/phase-2-3/bridge-report/${STUDENT_ID}`);
+                if (bridgeResponse.ok) {
+                    const bridgeData = await bridgeResponse.json();
+                    renderPhase3(bridgeData);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('error').style.display = 'block';
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        function renderDashboard(data) {
+            // Hide loading, show dashboard
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+
+            // Update student info (from mock data)
+            document.getElementById('studentName').textContent = 'Rajesh Kumar';
+            document.getElementById('studentId').textContent = STUDENT_ID;
+            document.getElementById('studentDept').textContent = 'Computer Engineering';
+            document.getElementById('studentSem').textContent = '2';
+
+            // Update overall status
+            const statusDiv = document.getElementById('overallStatus');
+            let statusColor = 'var(--success)';
+            let statusText = '🟢 SAFE: On track';
+            
+            if (data.critical_risk_count > 0) {
+                statusColor = 'var(--danger)';
+                statusText = '🔴 CRITICAL: Urgent intervention needed';
+            } else if (data.warning_count > 0) {
+                statusColor = 'var(--warning)';
+                statusText = '🟡 WARNING: Requires focused preparation';
+            }
+
+            statusDiv.innerHTML = `
+                <span class="status-dot" style="background: ${statusColor};"></span>
+                <span>${statusText}</span>
+            `;
+
+            // Render subjects
+            const container = document.getElementById('subjectsContainer');
+            container.innerHTML = '';
+
+            data.prioritized_study_list.forEach(subject => {
+                const riskClass = subject.risk_level === 'CRITICAL_RISK' ? 'critical' : 
+                                 subject.risk_level === 'WARNING' ? 'warning' : 'safe';
+                
+                const riskBadgeClass = subject.risk_level === 'CRITICAL_RISK' ? 'risk-critical' : 
+                                      subject.risk_level === 'WARNING' ? 'risk-warning' : 'risk-safe';
+
+                container.innerHTML += `
+                    <div class="subject-item ${riskClass}">
+                        <div class="subject-header">
+                            <div>
+                                <div class="subject-name">${subject.subject_name}</div>
+                                <div class="subject-code">${subject.subject_code}</div>
+                            </div>
+                            <div class="risk-badge ${riskBadgeClass}">
+                                ${subject.risk_level.replace('_', ' ')}
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 1rem;">
+                            <div class="metric">
+                                <span class="metric-label">Attendance</span>
+                                <span class="metric-value">${subject.attendance_percentage.toFixed(1)}%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${Math.min(subject.attendance_percentage, 100)}%"></div>
+                            </div>
+
+                            <div class="metric">
+                                <span class="metric-label">Internal Marks</span>
+                                <span class="metric-value">${subject.total_internal}/50</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${(subject.total_internal / 50) * 100}%"></div>
+                            </div>
+
+                            <div class="metric">
+                                <span class="metric-label">Priority Score</span>
+                                <span class="metric-value">${subject.priority_score.toFixed(1)}</span>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 1rem; padding: 1rem; background: rgba(0,0,0,0.03); border-radius: 6px;">
+                            <div style="font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem;">📚 Focus Area:</div>
+                            <div style="font-size: 0.9rem; color: var(--text-light);">${subject.revision_focus}</div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function renderPhase3(data) {
+            const container = document.getElementById('gapsContainer');
+            const noGaps = document.getElementById('noGapsMessage');
+
+            if (!data.has_gaps || data.prerequisites_failed.length === 0) {
+                noGaps.style.display = 'block';
+                container.innerHTML = '';
+                return;
+            }
+
+            noGaps.style.display = 'none';
+            container.innerHTML = '';
+
+            data.prerequisites_failed.forEach(gap => {
+                const severityClass = 'severity-' + gap.gap_severity.toLowerCase();
+                
+                container.innerHTML += `
+                    <div class="gap-card">
+                        <div class="gap-title">
+                            ${gap.prerequisite_subject} → ${gap.current_subject}
+                        </div>
+                        <div class="gap-description">
+                            ${gap.foundation_warning}
+                        </div>
+                        <div class="gap-severity ${severityClass}">
+                            ${gap.gap_severity} Gap
+                        </div>
+                        
+                        <div class="refresher-plan">
+                            <div class="plan-title">📅 5-Day Refresher Plan:</div>
+                            ${gap.refresher_plan.map((day, idx) => `
+                                <div class="plan-day">
+                                    <strong>Day ${idx + 1}:</strong> ${day}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            
+            // Update button states
+            document.querySelectorAll('.tab').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(tab).classList.add('active');
+        }
+
+        // Load on page load
+        window.addEventListener('load', loadDashboard);
+    </script>
+</body>
+</html>

@@ -2,6 +2,8 @@ from fastapi import APIRouter, HTTPException
 from models import StudentCreate, StudentUpdate
 from database import get_db
 from bson import ObjectId
+from datetime import date
+import math
 
 router = APIRouter()
 
@@ -10,6 +12,42 @@ def _serialize(doc):
     if doc and "_id" in doc:
         doc["id"] = str(doc.pop("_id"))
     return doc
+
+
+@router.get("/strategy/{username}")
+async def get_student_strategy_legacy(username: str):
+    """
+    Get student strategy (Legacy logic)
+    """
+    db = get_db()
+    user = await db.users.find_one({"username": username})
+    if not user:
+        raise HTTPException(status_code=404, detail="Student not found")
+    
+    # Simplified logic similar to root main.py
+    start_d = date(2026, 1, 1)
+    end_d   = date(2026, 5, 30)
+    
+    # Mock some subjects and working days
+    total_working = 100 
+    attended      = user.get("attended", 0)
+    required      = math.ceil(0.75 * total_working)
+    gap           = max(0, required - attended)
+    
+    if gap == 0:
+        explanation = "✅ Goal met! You are above 75%. Keep it up."
+    else:
+        explanation = f"Strategic Plan: Attend {gap} more sessions to hit your target."
+        
+    return {
+        "name":        user.get("name"),
+        "track":       user.get("career_track", "General"),
+        "attended":    attended,
+        "gap":         gap,
+        "explanation": explanation,
+        "p_dates":     [],
+        "g_dates":     []
+    }
 
 
 @router.post("/", status_code=201)

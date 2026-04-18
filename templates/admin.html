@@ -1,928 +1,196 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Admin — EduPath Optimizer</title>
-<style>
-/* ═══════════════════════════════════════════
-   EduPath Optimizer — Shared Dashboard Styles
-   Blue & White Clean Minimal Theme
-═══════════════════════════════════════════ */
-
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap');
-
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root {
-  --blue-50:  #eff6ff;
-  --blue-100: #dbeafe;
-  --blue-200: #bfdbfe;
-  --blue-400: #60a5fa;
-  --blue-500: #3b82f6;
-  --blue-600: #2563eb;
-  --blue-700: #1d4ed8;
-  --blue-900: #1e3a8a;
-  --slate-50:  #f8fafc;
-  --slate-100: #f1f5f9;
-  --slate-200: #e2e8f0;
-  --slate-300: #cbd5e1;
-  --slate-400: #94a3b8;
-  --slate-500: #64748b;
-  --slate-600: #475569;
-  --slate-700: #334155;
-  --slate-800: #1e293b;
-  --slate-900: #0f172a;
-  --green-50:  #f0fdf4;
-  --green-100: #dcfce7;
-  --green-500: #22c55e;
-  --green-600: #16a34a;
-  --green-700: #15803d;
-  --amber-50:  #fffbeb;
-  --amber-100: #fef3c7;
-  --amber-500: #f59e0b;
-  --amber-600: #d97706;
-  --amber-700: #b45309;
-  --red-50:  #fef2f2;
-  --red-100: #fee2e2;
-  --red-500: #ef4444;
-  --red-600: #dc2626;
-  --red-700: #b91c1c;
-  --white: #ffffff;
-  --font: 'DM Sans', sans-serif;
-  --mono: 'DM Mono', monospace;
-  --sidebar-w: 220px;
-  --topbar-h: 60px;
-  --radius: 12px;
-  --shadow-sm: 0 1px 2px rgba(15,23,42,0.06);
-  --shadow: 0 1px 3px rgba(15,23,42,0.08), 0 4px 12px rgba(15,23,42,0.05);
-  --shadow-md: 0 4px 16px rgba(15,23,42,0.08);
-}
-
-html, body {
-  height: 100%;
-  font-family: var(--font);
-  background: var(--slate-50);
-  color: var(--slate-900);
-  font-size: 14px;
-  line-height: 1.5;
-}
-
-/* ── Layout Shell ── */
-.shell {
-  display: grid;
-  grid-template-columns: var(--sidebar-w) 1fr;
-  grid-template-rows: auto;
-  min-height: 100vh;
-}
-
-/* ── Sidebar ── */
-.sidebar {
-  background: var(--white);
-  border-right: 1px solid var(--slate-200);
-  display: flex;
-  flex-direction: column;
-  position: fixed;
-  top: 0; left: 0; bottom: 0;
-  width: var(--sidebar-w);
-  z-index: 50;
-}
-
-.sidebar-logo {
-  padding: 20px 20px 16px;
-  border-bottom: 1px solid var(--slate-100);
-}
-
-.sidebar-logo .eyebrow {
-  font-family: var(--mono);
-  font-size: 9px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--blue-500);
-  margin-bottom: 4px;
-}
-
-.sidebar-logo h1 {
-  font-size: 17px;
-  font-weight: 700;
-  color: var(--slate-900);
-  line-height: 1.2;
-}
-
-.sidebar-logo h1 span { color: var(--blue-600); }
-
-.sidebar-nav {
-  flex: 1;
-  padding: 12px 10px;
-  overflow-y: auto;
-}
-
-.nav-section {
-  font-family: var(--mono);
-  font-size: 9px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--slate-400);
-  padding: 10px 10px 4px;
-}
-
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  padding: 9px 10px;
-  border-radius: 8px;
-  cursor: pointer;
-  color: var(--slate-600);
-  font-size: 13.5px;
-  font-weight: 500;
-  text-decoration: none;
-  transition: all 0.12s;
-  margin-bottom: 1px;
-}
-
-.nav-item:hover { background: var(--slate-50); color: var(--slate-900); }
-
-.nav-item.active {
-  background: var(--blue-50);
-  color: var(--blue-700);
-  font-weight: 600;
-}
-
-.nav-icon { font-size: 15px; width: 18px; text-align: center; flex-shrink: 0; }
-
-.sidebar-footer {
-  padding: 14px;
-  border-top: 1px solid var(--slate-100);
-}
-
-.user-card {
-  background: var(--slate-50);
-  border: 1px solid var(--slate-200);
-  border-radius: 10px;
-  padding: 12px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.user-avatar {
-  width: 32px; height: 32px;
-  border-radius: 50%;
-  background: var(--blue-600);
-  color: var(--white);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  font-weight: 700;
-  flex-shrink: 0;
-}
-
-.user-info .name {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--slate-800);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 110px;
-}
-
-.user-info .role {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--blue-500);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-/* ── Main area ── */
-.main {
-  margin-left: var(--sidebar-w);
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-/* ── Topbar ── */
-.topbar {
-  background: var(--white);
-  border-bottom: 1px solid var(--slate-200);
-  height: var(--topbar-h);
-  padding: 0 28px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: sticky;
-  top: 0;
-  z-index: 40;
-}
-
-.topbar-title {
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--slate-900);
-}
-
-.topbar-sub {
-  font-size: 12px;
-  color: var(--slate-400);
-  margin-top: 1px;
-}
-
-.topbar-right { display: flex; align-items: center; gap: 10px; }
-
-.btn-logout {
-  padding: 7px 14px;
-  border: 1.5px solid var(--slate-200);
-  border-radius: 8px;
-  background: var(--white);
-  font-family: var(--font);
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--slate-500);
-  cursor: pointer;
-  transition: all 0.12s;
-}
-
-.btn-logout:hover { border-color: var(--red-500); color: var(--red-600); }
-
-/* ── Page content ── */
-.page-content {
-  padding: 28px;
-  flex: 1;
-  max-width: 1080px;
-}
-
-/* ── Page heading ── */
-.page-header { margin-bottom: 24px; }
-.page-header h2 { font-size: 22px; font-weight: 700; color: var(--slate-900); }
-.page-header p  { font-size: 13px; color: var(--slate-500); margin-top: 3px; }
-
-/* ── Stat cards ── */
-.stats-grid {
-  display: grid;
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-.stats-grid-3 { grid-template-columns: repeat(3, 1fr); }
-.stats-grid-4 { grid-template-columns: repeat(4, 1fr); }
-
-.stat-card {
-  background: var(--white);
-  border: 1px solid var(--slate-200);
-  border-radius: var(--radius);
-  padding: 18px 20px;
-  box-shadow: var(--shadow-sm);
-  border-top: 2px solid var(--card-accent, var(--blue-500));
-}
-
-.stat-label {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--slate-400);
-  margin-bottom: 8px;
-}
-
-.stat-value {
-  font-family: var(--mono);
-  font-size: 28px;
-  font-weight: 500;
-  color: var(--card-accent, var(--blue-600));
-  line-height: 1;
-}
-
-.stat-hint {
-  font-size: 12px;
-  color: var(--slate-400);
-  margin-top: 5px;
-}
-
-/* ── Card ── */
-.card {
-  background: var(--white);
-  border: 1px solid var(--slate-200);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-sm);
-  overflow: hidden;
-}
-
-.card-header {
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--slate-100);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.card-title { font-size: 14px; font-weight: 700; color: var(--slate-900); }
-.card-sub   { font-size: 12px; color: var(--slate-400); margin-top: 1px; }
-.card-body  { padding: 20px; }
-
-/* ── Form elements ── */
-.form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
-.form-grid-full { display: grid; grid-template-columns: 1fr; gap: 14px; }
-
-.field { display: flex; flex-direction: column; gap: 5px; }
-
-.field label {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--slate-500);
-}
-
-.field input,
-.field select,
-.field textarea {
-  padding: 9px 12px;
-  border: 1.5px solid var(--slate-200);
-  border-radius: 8px;
-  font-family: var(--font);
-  font-size: 13.5px;
-  color: var(--slate-900);
-  background: var(--slate-50);
-  outline: none;
-  transition: border-color 0.12s, box-shadow 0.12s;
-  -webkit-appearance: none;
-}
-
-.field input:focus,
-.field select:focus,
-.field textarea:focus {
-  border-color: var(--blue-500);
-  box-shadow: 0 0 0 3px var(--blue-100);
-  background: var(--white);
-}
-
-/* ── Buttons ── */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 9px 18px;
-  border-radius: 8px;
-  border: none;
-  font-family: var(--font);
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.12s;
-  letter-spacing: 0.1px;
-}
-
-.btn-blue  { background: var(--blue-600); color: var(--white); }
-.btn-blue:hover  { background: var(--blue-700); transform: translateY(-1px); }
-.btn-white { background: var(--white); color: var(--slate-700); border: 1.5px solid var(--slate-200); }
-.btn-white:hover { border-color: var(--slate-300); background: var(--slate-50); }
-.btn-red   { background: var(--red-50); color: var(--red-600); border: 1.5px solid var(--red-100); }
-.btn-red:hover { background: var(--red-100); }
-
-/* ── Alerts ── */
-.alert {
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-  padding: 14px 16px;
-  border-radius: 10px;
-  font-size: 13.5px;
-  line-height: 1.55;
-  margin-bottom: 20px;
-}
-
-.alert-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
-.alert-body strong { display: block; font-weight: 700; font-size: 13px; margin-bottom: 2px; }
-
-.alert-blue   { background: var(--blue-50);  border: 1px solid var(--blue-200);  color: #1e40af; }
-.alert-green  { background: var(--green-50); border: 1px solid var(--green-100); color: var(--green-700); }
-.alert-amber  { background: var(--amber-50); border: 1px solid var(--amber-100); color: var(--amber-700); }
-.alert-red    { background: var(--red-50);   border: 1px solid var(--red-100);   color: var(--red-700); }
-
-/* ── Table ── */
-.table-wrap { overflow-x: auto; }
-
-.table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.table th {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--slate-400);
-  text-align: left;
-  padding: 10px 16px;
-  border-bottom: 1px solid var(--slate-200);
-  background: var(--slate-50);
-  white-space: nowrap;
-}
-
-.table td {
-  padding: 12px 16px;
-  font-size: 13.5px;
-  border-bottom: 1px solid var(--slate-100);
-  color: var(--slate-700);
-}
-
-.table tr:last-child td { border-bottom: none; }
-.table tbody tr:hover td { background: var(--blue-50); }
-
-/* ── Badges ── */
-.badge {
-  display: inline-block;
-  padding: 3px 10px;
-  border-radius: 20px;
-  font-family: var(--mono);
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.3px;
-}
-
-.badge-blue   { background: var(--blue-50);  color: var(--blue-700);  border: 1px solid var(--blue-200); }
-.badge-green  { background: var(--green-50); color: var(--green-700); border: 1px solid var(--green-100); }
-.badge-amber  { background: var(--amber-50); color: var(--amber-700); border: 1px solid var(--amber-100); }
-.badge-red    { background: var(--red-50);   color: var(--red-700);   border: 1px solid var(--red-100); }
-.badge-slate  { background: var(--slate-100); color: var(--slate-600); border: 1px solid var(--slate-200); }
-
-/* ── Date tags ── */
-.tag-grid { display: flex; flex-wrap: wrap; gap: 7px; }
-
-.tag {
-  padding: 4px 11px;
-  border-radius: 20px;
-  font-family: var(--mono);
-  font-size: 11px;
-  font-weight: 500;
-  cursor: default;
-}
-
-.tag-career { background: var(--blue-50);  color: var(--blue-700);  border: 1px solid var(--blue-200); }
-.tag-buffer { background: var(--amber-50); color: var(--amber-700); border: 1px solid var(--amber-100); }
-
-/* ── Progress ── */
-.progress-bar {
-  height: 5px;
-  background: var(--slate-100);
-  border-radius: 3px;
-  overflow: hidden;
-  margin-top: 4px;
-}
-.progress-fill {
-  height: 100%;
-  border-radius: 3px;
-  transition: width 0.8s ease;
-}
-
-/* ── Two col grid ── */
-.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
-
-/* ── Section spacer ── */
-.section-gap { margin-bottom: 20px; }
-
-/* ── Toast ── */
-#toast {
-  position: fixed;
-  bottom: 24px; right: 24px;
-  padding: 11px 18px;
-  border-radius: 9px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--white);
-  background: var(--slate-800);
-  box-shadow: var(--shadow-md);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s, transform 0.2s;
-  transform: translateY(6px);
-  z-index: 999;
-}
-#toast.show { opacity: 1; transform: none; }
-
-/* ── Divider ── */
-.divider { height: 1px; background: var(--slate-100); margin: 20px 0; }
-
-/* ── Empty state ── */
-.empty-state {
-  text-align: center;
-  padding: 40px 20px;
-  color: var(--slate-400);
-  font-size: 13px;
-}
-.empty-state .icon { font-size: 32px; margin-bottom: 8px; }
-
-/* ── Responsive ── */
-@media (max-width: 900px) {
-  .shell { grid-template-columns: 1fr; }
-  .sidebar { transform: translateX(-100%); }
-  .main { margin-left: 0; }
-  .stats-grid-3, .stats-grid-4, .grid-2, .grid-3 { grid-template-columns: 1fr 1fr; }
-  .form-grid-3 { grid-template-columns: 1fr 1fr; }
-}
-
-@media (max-width: 600px) {
-  .stats-grid-3, .stats-grid-4, .grid-2, .grid-3,
-  .form-grid-2, .form-grid-3 { grid-template-columns: 1fr; }
-  .page-content { padding: 16px; }
-}
-
-/* ── Topbar height fix ── */
-.topbar { height: 60px !important; min-height: 60px; }
-.topbar > div:first-child { display:flex; flex-direction:column; justify-content:center; line-height:1.3; }
-
-
-/* ── LAYOUT FIX ── */
-.shell {
-  display: flex !important;
-  min-height: 100vh;
-}
-.sidebar {
-  width: 240px;
-  min-width: 240px;
-  flex-shrink: 0;
-  position: fixed;
-  top: 0; left: 0; bottom: 0;
-  overflow-y: auto;
-  z-index: 50;
-}
-.main {
-  margin-left: 240px;
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  width: calc(100% - 240px);
-}
-.topbar {
-  position: sticky;
-  top: 0;
-  z-index: 40;
-  background: #fff;
-  border-bottom: 1px solid #e2e8f0;
-  height: 60px;
-  padding: 0 28px;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  flex-direction: row !important;
-  width: 100%;
-  box-sizing: border-box;
-}
-.topbar > div:first-child {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  line-height: 1.3;
-}
-.topbar-title { font-size: 15px; font-weight: 700; }
-.topbar-sub   { font-size: 12px; color: #94a3b8; }
-.topbar-right { display: flex; align-items: center; gap: 10px; }
-.page-content {
-  padding: 28px;
-  flex: 1;
-  width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
-}
-.grid-2 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-}
-.stats-grid-3 { grid-template-columns: repeat(3, 1fr); }
-.stats-grid-4 { grid-template-columns: repeat(4, 1fr); }
-
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel | EduPath Optimizer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    <link href="/static/shared.css" rel="stylesheet">
+    <style>
+        .view-section { display: none; }
+        .view-section.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
 </head>
 <body>
+    <div id="toast-container" class="toast-container"></div>
 
-<div class="shell">
+    <div class="app-container">
+        <div class="sidebar">
+            <div class="p-4 border-bottom border-secondary mb-3 text-center">
+                <h5 class="m-0 fw-bold">EduPath <span class="text-primary">Adm</span></h5>
+            </div>
+            <nav id="sidebarNav">
+                <a href="#dashboard" class="nav-link active"><i class="fas fa-user-shield me-3"></i> Admin Home</a>
+                <a href="#students" class="nav-link"><i class="fas fa-graduation-cap me-3"></i> Manage Students</a>
+                <a href="#events" class="nav-link"><i class="fas fa-calendar-alt me-3"></i> Event Manager</a>
+                <a href="#" class="nav-link text-danger" id="logoutBtn"><i class="fas fa-sign-out-alt me-3"></i> Logout</a>
+            </nav>
+        </div>
 
-  <!-- ── Sidebar ── -->
-  <aside class="sidebar">
-    <div class="sidebar-logo">
-      <div class="eyebrow">EduPath</div>
-      <h1>Edu<span>Path</span><br>Optimizer</h1>
+        <main class="main-content">
+            <header class="d-flex justify-content-between align-items-center mb-5">
+                <div>
+                    <h2 class="fw-bold m-0">System Control Center</h2>
+                    <p class="text-muted">Global Institutional Overview</p>
+                </div>
+                <div class="d-flex align-items-center">
+                    <span class="badge bg-danger p-2 shadow-sm"><i class="fas fa-shield-halved me-2"></i> ADMIN PRIVILEGES</span>
+                </div>
+            </header>
+
+            <!-- SPA Views -->
+            <div id="dashboard" class="view-section active">
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="glass-card text-center py-4">
+                            <i class="fas fa-users fs-3 text-primary mb-2"></i>
+                            <h3 class="fw-bold" id="totalStudents">0</h3>
+                            <p class="text-muted small m-0 text-uppercase">Total Students</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="glass-card text-center py-4">
+                            <i class="fas fa-calendar-check fs-3 text-success mb-2"></i>
+                            <h3 class="fw-bold" id="totalEvents">0</h3>
+                            <p class="text-muted small m-0 text-uppercase">Active Events</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="glass-card text-center py-4">
+                            <i class="fas fa-server fs-3 text-warning mb-2"></i>
+                            <h3 class="fw-bold">99.9%</h3>
+                            <p class="text-muted small m-0 text-uppercase">System Uptime</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-card">
+                    <h5 class="fw-bold mb-3">System Performance</h5>
+                    <div class="progress mb-3" style="height: 10px;"><div class="progress-bar" style="width: 85%"></div></div>
+                    <p class="small text-muted">CPU Usage: 15% | Database Latency: 24ms</p>
+                </div>
+            </div>
+
+            <div id="students" class="view-section">
+                <div class="glass-card">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="fw-bold m-0">Student Roster</h5>
+                        <button class="btn btn-sm btn-primary"><i class="fas fa-plus me-2"></i> Add Student</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr><th>ID</th><th>Name</th><th>Department</th><th>Status</th></tr>
+                            </thead>
+                            <tbody id="adminStudentTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="events" class="view-section">
+                <div class="row">
+                    <div class="col-lg-7">
+                        <div class="glass-card">
+                            <h5 class="fw-bold mb-4">Published Events</h5>
+                            <div id="festsList" class="list-group list-group-flush small"></div>
+                        </div>
+                    </div>
+                    <div class="col-lg-5">
+                        <div class="glass-card">
+                            <h5 class="fw-bold mb-4">Add University Event</h5>
+                            <form id="addEventForm">
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold">EVENT TITLE</label>
+                                    <input type="text" id="eventTitle" class="form-control" required placeholder="Annual Fest">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label small fw-bold">DATE</label>
+                                    <input type="date" id="eventDate" class="form-control" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100 fw-bold shadow-sm">PUBLISH TO CALENDAR</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
 
-    <nav class="sidebar-nav">
-      <div class="nav-section">Overview</div>
-      <a class="nav-item active" onclick="showSection('overview')">
-        <span class="nav-icon">◈</span> Overview
-      </a>
+    <script>
+        const TOKEN = localStorage.getItem('access_token');
+        if (!TOKEN || localStorage.getItem('user_role') !== 'admin') window.location.href = '/login';
 
-      <div class="nav-section">Management</div>
-      <a class="nav-item" onclick="showSection('fests')">
-        <span class="nav-icon">📅</span> Fests & Holidays
-      </a>
-      <a class="nav-item" onclick="showSection('users')">
-        <span class="nav-icon">👥</span> Users
-      </a>
-    </nav>
+        function showToast(msg, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast-msg toast-${type}`;
+            toast.innerText = msg;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        }
 
-    <div class="sidebar-footer">
-      <div class="user-card">
-        <div class="user-avatar" id="av">A</div>
-        <div class="user-info">
-          <div class="name" id="sb-name">Admin</div>
-          <div class="role">Administrator</div>
-        </div>
-      </div>
-    </div>
-  </aside>
+        // SPA Navigation logic
+        window.addEventListener('hashchange', handleNav);
+        function handleNav() {
+            const hash = window.location.hash.substring(1) || 'dashboard';
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${hash}`) link.classList.add('active');
+            });
+            document.querySelectorAll('.view-section').forEach(view => {
+                view.classList.remove('active');
+                if (view.id === hash) view.classList.add('active');
+            });
+        }
 
-  <!-- ── Main ── -->
-  <div class="main">
+        async function loadAdminData() {
+            try {
+                const res = await fetch('/api/admin/students', {
+                    headers: { 'Authorization': `Bearer ${TOKEN}` }
+                });
+                const data = await res.json();
+                document.getElementById('totalStudents').innerText = data.students.length;
+                document.getElementById('adminStudentTable').innerHTML = data.students.map(s => `
+                    <tr><td class="fw-bold">${s.username}</td><td>${s.name}</td><td>${s.department || 'N/A'}</td><td><span class="badge bg-success">Active</span></td></tr>
+                `).join('');
 
-    <!-- Topbar -->
-    <div class="topbar">
-      <div>
-        <div class="topbar-title" id="topbar-title">Overview</div>
-        <div class="topbar-sub">Admin Control Panel</div>
-      </div>
-      <div class="topbar-right">
-        <button class="btn-logout" onclick="logout()">← Logout</button>
-      </div>
-    </div>
+                const festRes = await fetch('/api/admin/fests', {
+                    headers: { 'Authorization': `Bearer ${TOKEN}` }
+                });
+                const festData = await festRes.json();
+                document.getElementById('totalEvents').innerText = festData.fests.length;
+                document.getElementById('festsList').innerHTML = festData.fests.map(f => `
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div><div class="fw-bold">${f.name}</div><div class="text-muted x-small">${f.date}</div></div>
+                        <i class="fas fa-trash text-danger cursor-pointer"></i>
+                    </div>
+                `).join('');
+            } catch (err) { showToast('Error loading system data', 'error'); }
+        }
 
-    <div class="page-content">
+        document.getElementById('addEventForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const res = await fetch('/api/admin/add-fest', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${TOKEN}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title: document.getElementById('eventTitle').value, event_date: document.getElementById('eventDate').value, category: 'Academic' })
+            });
+            if (res.ok) {
+                showToast('Event published');
+                document.getElementById('addEventForm').reset();
+                loadAdminData();
+            } else showToast('Failed to publish', 'error');
+        });
 
-      <!-- ══ OVERVIEW ══ -->
-      <div id="sec-overview" class="section">
-        <div class="page-header">
-          <h2>Admin Dashboard</h2>
-          <p>System overview and quick actions</p>
-        </div>
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.clear();
+            window.location.href = '/login';
+        });
 
-        <div class="stats-grid stats-grid-3 section-gap">
-          <div class="stat-card" style="--card-accent: var(--blue-500)">
-            <div class="stat-label">Total Users</div>
-            <div class="stat-value" id="stat-users">—</div>
-            <div class="stat-hint">Registered in system</div>
-          </div>
-          <div class="stat-card" style="--card-accent: var(--amber-500)">
-            <div class="stat-label">Fests / Holidays</div>
-            <div class="stat-value" id="stat-fests">—</div>
-            <div class="stat-hint">Excluded from attendance</div>
-          </div>
-          <div class="stat-card" style="--card-accent: var(--green-500)">
-            <div class="stat-label">Active Tracks</div>
-            <div class="stat-value">4</div>
-            <div class="stat-hint">Data Science, IOT, Cyber, CG</div>
-          </div>
-        </div>
-
-        <div class="grid-2">
-          <div class="card">
-            <div class="card-header">
-              <div>
-                <div class="card-title">Quick Add Fest</div>
-                <div class="card-sub">Add a university holiday instantly</div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="form-grid-full" style="gap:12px">
-                <div class="field">
-                  <label>Event Name</label>
-                  <input type="text" id="q-fest-name" placeholder="e.g. Techfest 2026"/>
-                </div>
-                <div class="field">
-                  <label>Event Date</label>
-                  <input type="date" id="q-fest-date"/>
-                </div>
-              </div>
-              <div style="margin-top:14px">
-                <button class="btn btn-blue" onclick="addFest()">+ Add Holiday</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title">Registered Fests</div>
-            </div>
-            <div id="fests-mini" style="padding:4px 0">
-              <div class="empty-state"><div class="icon">📅</div>Loading...</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ══ FESTS ══ -->
-      <div id="sec-fests" class="section" style="display:none">
-        <div class="page-header">
-          <h2>Fests & Holidays</h2>
-          <p>All dates excluded from attendance calculations</p>
-        </div>
-
-        <div class="grid-2 section-gap">
-          <div class="card">
-            <div class="card-header">
-              <div>
-                <div class="card-title">Add New Fest / Holiday</div>
-                <div class="card-sub">These dates are subtracted from all student attendance counts</div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="form-grid-full" style="gap:14px">
-                <div class="field">
-                  <label>Event Name</label>
-                  <input type="text" id="fest-name" placeholder="e.g. Annual Techfest"/>
-                </div>
-                <div class="field">
-                  <label>Event Date</label>
-                  <input type="date" id="fest-date"/>
-                </div>
-              </div>
-              <div style="margin-top:18px;display:flex;gap:10px;align-items:center">
-                <button class="btn btn-blue" onclick="addFest()">Add Holiday</button>
-                <span id="fest-feedback" style="font-size:12px;color:var(--green-600)"></span>
-              </div>
-            </div>
-          </div>
-
-          <div class="card">
-            <div class="card-header">
-              <div class="card-title">All Registered Fests</div>
-            </div>
-            <div class="table-wrap">
-              <table class="table">
-                <thead>
-                  <tr><th>Event</th><th>Date</th><th>Status</th></tr>
-                </thead>
-                <tbody id="fests-table">
-                  <tr><td colspan="3" style="text-align:center;color:var(--slate-400);padding:24px">Loading...</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ══ USERS ══ -->
-      <div id="sec-users" class="section" style="display:none">
-        <div class="page-header">
-          <h2>User Management</h2>
-          <p>All registered students, teachers and admins</p>
-        </div>
-
-        <div class="card">
-          <div class="card-header">
-            <div class="card-title">All Users</div>
-            <div style="display:flex;gap:8px">
-              <span class="badge badge-blue" id="count-students">Students: —</span>
-              <span class="badge badge-amber" id="count-teachers">Teachers: —</span>
-            </div>
-          </div>
-          <div class="table-wrap">
-            <table class="table">
-              <thead>
-                <tr><th>Username</th><th>Name</th><th>Role</th><th>Career Track</th><th>Attended</th></tr>
-              </thead>
-              <tbody id="users-table">
-                <tr><td colspan="5" style="text-align:center;color:var(--slate-400);padding:24px">Loading...</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-    </div><!-- /page-content -->
-  </div><!-- /main -->
-</div>
-
-<div id="toast"></div>
-
-<script>
-  // ── Auth guard ──
-  const token = sessionStorage.getItem('token');
-  const role  = sessionStorage.getItem('role');
-  const name  = sessionStorage.getItem('name') || 'Admin';
-  if (!token || role !== 'admin') window.location.href = '/';
-
-  document.getElementById('sb-name').textContent = name;
-  document.getElementById('av').textContent = name[0].toUpperCase();
-
-  function auth() { return { 'Authorization': `Bearer ${token}` }; }
-  function logout() { sessionStorage.clear(); window.location.href = '/'; }
-
-  // ── Navigation ──
-  const sections = ['overview','fests','users'];
-  const titles   = { overview:'Overview', fests:'Fests & Holidays', users:'User Management' };
-
-  function showSection(id) {
-    sections.forEach(s => {
-      document.getElementById('sec-'+s).style.display = s === id ? 'block' : 'none';
-    });
-    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-    event.currentTarget.classList.add('active');
-    document.getElementById('topbar-title').textContent = titles[id];
-    if (id === 'fests')  loadFests();
-    if (id === 'users')  loadUsers();
-  }
-
-  // ── Load Fests ──
-  async function loadFests() {
-    const res  = await fetch('/admin/fests', { headers: auth() });
-    if (!res.ok) return;
-    const data = await res.json();
-    const fests = data.fests || [];
-
-    document.getElementById('stat-fests').textContent = fests.length;
-
-    // Mini list in overview
-    const mini = document.getElementById('fests-mini');
-    mini.innerHTML = fests.length ? fests.slice(0,5).map(f => `
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 20px;border-bottom:1px solid var(--slate-100)">
-        <span style="font-weight:600;font-size:13px">${f.name}</span>
-        <span class="badge badge-amber">${f.date}</span>
-      </div>`).join('') + (fests.length > 5 ? `<div style="padding:10px 20px;font-size:12px;color:var(--slate-400)">${fests.length-5} more…</div>` : '')
-    : '<div class="empty-state"><div class="icon">📅</div>No fests yet</div>';
-
-    // Full table
-    const tbody = document.getElementById('fests-table');
-    if (tbody) {
-      tbody.innerHTML = fests.length ? fests.map(f => `
-        <tr>
-          <td style="font-weight:600">${f.name}</td>
-          <td><span class="badge badge-amber">${f.date}</span></td>
-          <td><span class="badge badge-green">Active</span></td>
-        </tr>`).join('')
-      : '<tr><td colspan="3" style="text-align:center;color:var(--slate-400);padding:24px">No fests registered</td></tr>';
-    }
-  }
-
-  // ── Add Fest ──
-  async function addFest() {
-    const name = (document.getElementById('fest-name') || document.getElementById('q-fest-name')).value.trim();
-    const date = (document.getElementById('fest-date') || document.getElementById('q-fest-date')).value;
-    if (!name || !date) { showToast('Fill in both fields', true); return; }
-
-    const n = document.getElementById('fest-name') || document.getElementById('q-fest-name');
-    const d = document.getElementById('fest-date') || document.getElementById('q-fest-date');
-    const nameVal = n.value.trim();
-    const dateVal = d.value;
-    if (!nameVal || !dateVal) { showToast('Fill in both fields', true); return; }
-
-    const res = await fetch('/admin/add-fest', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', ...auth() },
-      body: JSON.stringify({ event_name: nameVal, event_date: dateVal })
-    });
-    if (res.ok) {
-      n.value = ''; d.value = '';
-      showToast('✓ Fest added');
-      loadFests();
-      const fb = document.getElementById('fest-feedback');
-      if (fb) { fb.textContent = `"${nameVal}" added successfully`; setTimeout(()=>fb.textContent='',3000); }
-    } else {
-      const err = await res.json();
-      showToast(err.detail || 'Error', true);
-    }
-  }
-
-  // ── Load Users ──
-  async function loadUsers() {
-    const res  = await fetch('/admin/students', { headers: auth() });
-    if (!res.ok) { document.getElementById('users-table').innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--red-500)">Access denied — teacher endpoint</td></tr>'; return; }
-    const data = await res.json();
-    const students = data.students || [];
-    document.getElementById('count-students').textContent = `Students: ${students.length}`;
-
-    const trackColor = { 'Data Science':'badge-blue','Cyber Security':'badge-red','IOT':'badge-green','Computer Graphics':'badge-amber' };
-
-    document.getElementById('stat-users').textContent = students.length;
-    document.getElementById('users-table').innerHTML = students.length
-      ? students.map(s => `
-        <tr>
-          <td><span class="badge badge-slate">${s.username}</span></td>
-          <td style="font-weight:600">${s.name}</td>
-          <td><span class="badge badge-blue">Student</span></td>
-          <td><span class="badge ${trackColor[s.career_track]||'badge-slate'}">${s.career_track}</span></td>
-          <td><strong>${s.attended}</strong></td>
-        </tr>`).join('')
-      : '<tr><td colspan="5" style="text-align:center;color:var(--slate-400);padding:24px">No students found</td></tr>';
-  }
-
-  // ── Toast ──
-  function showToast(msg, isErr = false) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.style.background = isErr ? 'var(--red-600)' : 'var(--slate-800)';
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2500);
-  }
-
-  // ── Init ──
-  loadFests();
-</script>
+        handleNav();
+        loadAdminData();
+    </script>
 </body>
 </html>

@@ -633,7 +633,7 @@
     fd.append('username', document.getElementById('username').value.trim());
     fd.append('password', document.getElementById('password').value);
 
-    const res = await fetch('/token', { method: 'POST', body: fd });
+    const res = await fetch('/api/auth/token', { method: 'POST', body: fd });
     const data = await res.json();
 
     if (!res.ok) {
@@ -667,7 +667,7 @@
 
   // ── ADMIN ──────────────────────────────────────
   async function loadAdminData() {
-    const res = await fetch('/admin/fests', { headers: auth() });
+    const res = await fetch('/api/admin/fests', { headers: auth() });
     if (!res.ok) return;
     const data = await res.json();
     const el = document.getElementById('fests-list');
@@ -685,7 +685,7 @@
     const date = document.getElementById('fest_date').value;
     if (!name || !date) { showToast('Fill in both fields', true); return; }
 
-    const res = await fetch('/admin/add-fest', {
+    const res = await fetch('/api/admin/add-fest', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', ...auth() },
       body: JSON.stringify({ event_name: name, event_date: date })
@@ -703,7 +703,7 @@
 
   // ── TEACHER ────────────────────────────────────
   async function loadTeacherData() {
-    const res = await fetch('/teacher/students', { headers: auth() });
+    const res = await fetch('/api/teachers/students', { headers: auth() });
     if (!res.ok) return;
     const data = await res.json();
     const tbody = document.getElementById('students-tbody');
@@ -726,7 +726,7 @@
     const cnt = parseInt(document.getElementById('att_count').value);
     if (!sid || isNaN(cnt)) { showToast('Fill in both fields', true); return; }
 
-    const res = await fetch('/teacher/update-attendance', {
+    const res = await fetch('/api/teachers/update-attendance', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', ...auth() },
       body: JSON.stringify({ student_id: sid, attended_count: cnt })
@@ -743,7 +743,7 @@
 
   // ── STUDENT ────────────────────────────────────
   async function loadStudentData() {
-    const res = await fetch('/student/strategy', { headers: auth() });
+    const res = await fetch('/api/students/strategy', { headers: auth() });
     const data = await res.json();
     if (!res.ok) { showToast('❌ Could not load strategy', true); return; }
 
@@ -787,7 +787,7 @@
       country_code:     'IN'
     };
 
-    const res = await fetch('/calculate-strategy', {
+    const res = await fetch('/api/optimize/calculate-strategy', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)

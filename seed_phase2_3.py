@@ -9,9 +9,13 @@ import asyncio
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 from datetime import datetime
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017")
-DB_NAME = os.getenv("DB_NAME", "edupath_optimizer")
+DB_NAME = os.getenv("DB_NAME", "edupath_db")
 
 async def seed_database():
     """Seed Phase 2 and Phase 3 data"""
@@ -21,9 +25,45 @@ async def seed_database():
     print("🌱 Seeding Phase 2 & 3 Data...\n")
     
     # ════════════════════════════════════════════════════════
+    # STUDENTS COLLECTION (Required first)
+    # ════════════════════════════════════════════════════════
+    print("[Students] Seeding students collection...")
+    
+    students_data = [
+        {
+            "student_id": "2024001",
+            "name": "Rajesh Kumar",
+            "email": "rajesh.kumar@university.edu",
+            "department": "CE",
+            "semester": 2,
+            "status": "active"
+        },
+        {
+            "student_id": "2024002",
+            "name": "Priya Singh",
+            "email": "priya.singh@university.edu",
+            "department": "IT",
+            "semester": 2,
+            "status": "active"
+        },
+        {
+            "student_id": "2024003",
+            "name": "Amit Patel",
+            "email": "amit.patel@university.edu",
+            "department": "EC",
+            "semester": 2,
+            "status": "active"
+        }
+    ]
+    
+    await db.students.delete_many({})
+    result = await db.students.insert_many(students_data)
+    print(f"✓ Inserted {len(result.inserted_ids)} student records")
+    
+    # ════════════════════════════════════════════════════════
     # PHASE 2: Academic Performance Collection
     # ════════════════════════════════════════════════════════
-    print("[Phase 2] Seeding academic_performance collection...")
+    print("\n[Phase 2] Seeding academic_performance collection...")
     
     academic_performance_data = [
         # Student 2024001 - Mixed performance (test case for diagnostic logic)
@@ -213,11 +253,13 @@ async def seed_database():
     # ════════════════════════════════════════════════════════
     # Print Summary
     # ════════════════════════════════════════════════════════
+    student_count = await db.students.count_documents({})
     perf_count = await db.academic_performance.count_documents({})
     map_count = await db.curriculum_map.count_documents({})
     
     print(f"\n{'='*60}")
     print(f"✓ Seed Complete!")
+    print(f"  • Student Records: {student_count}")
     print(f"  • Academic Performance Records: {perf_count}")
     print(f"  • Curriculum Mappings: {map_count}")
     print(f"{'='*60}")
@@ -229,7 +271,7 @@ async def seed_database():
     for mapping in curriculum_map_data:
         print(f"  → {mapping['prerequisite_subject']} → {mapping['current_subject']}")
     
-    await client.close()
+    client.close()
 
 if __name__ == "__main__":
     asyncio.run(seed_database())
